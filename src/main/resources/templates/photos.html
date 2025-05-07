@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="EN">
+<head>
+    <title>Your Photos</title>
+</head>
+<body>
+<h2>Welcome, <span th:text="${user.email}">user@example.com</span></h2>
+<h3>Your Photo Gallery</h3>
+
+<ul>
+    <li th:each="photo : ${photos}" th:text="${photo}">Photo Name</li>
+</ul>
+
+<a th:href="@{/profile}">View Profile</a> |
+<a th:href="@{/logout}">Logout</a>
+</body>
+</html>
