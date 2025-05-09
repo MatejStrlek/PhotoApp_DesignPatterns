@@ -38,7 +38,8 @@ public class LocalUserController {
             model.addAttribute("successMessage", "Registration successful! You can now log in.");
             return "redirect:/login";
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errorMessage", "Invalid package selected. Please try again.");
+            model.addAttribute("packageTypes", PackageType.values());
+            model.addAttribute("errorMessage", "Email is already registered.");
             return "register";
         }
     }
