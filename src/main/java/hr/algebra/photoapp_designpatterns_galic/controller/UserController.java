@@ -2,6 +2,7 @@ package hr.algebra.photoapp_designpatterns_galic.controller;
 
 import hr.algebra.photoapp_designpatterns_galic.model.AuthProvider;
 import hr.algebra.photoapp_designpatterns_galic.model.PackageType;
+import hr.algebra.photoapp_designpatterns_galic.model.User;
 import hr.algebra.photoapp_designpatterns_galic.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-public class LocalUserController {
+public class UserController {
     @Autowired
     private UserService userService;
 
@@ -43,4 +44,12 @@ public class LocalUserController {
             return "register";
         }
     }
+
+    @GetMapping("/profile")
+    public String showProfile(Model model) {
+        User user = userService.getCurrentUser();
+        model.addAttribute("user", user);
+        return "profile";
+    }
+
 }
