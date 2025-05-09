@@ -15,6 +15,11 @@ public class LocalUserController {
     @Autowired
     private UserService userService;
 
+    @GetMapping("/")
+    public String redirectToRegister() {
+        return "redirect:/register";
+    }
+
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("packageTypes", PackageType.values());

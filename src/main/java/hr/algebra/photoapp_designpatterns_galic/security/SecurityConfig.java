@@ -31,7 +31,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/login", "/register", "/public/**", "/h2-console/**").permitAll()
+                        .requestMatchers("/", "/login", "/register", "/public/**", "/h2-console/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/photos/**", "/profile/**", "/upload/**").hasAnyRole("REGISTERED", "ADMIN")
                         .requestMatchers("/public/photos/**").permitAll()
