@@ -22,6 +22,9 @@ public class PhotoController {
     public String showPhotos(Model model) {
         User currentUser = userService.getCurrentUser();
 
+        if (currentUser.getPackageType() == null) {
+            return "redirect:/select-package";
+        }
         // dummy data for demonstration purposes
         List<String> photoNames = List.of("beach.jpg", "mountain.png", "family-photo.jpeg");
 

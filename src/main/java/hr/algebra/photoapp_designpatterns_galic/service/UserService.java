@@ -51,4 +51,10 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
     }
 
+    public void setCurrentUserPackage(PackageType packageType) {
+        User currentUser = getCurrentUser();
+        currentUser.setPackageType(packageType);
+        userRepository.save(currentUser);
+    }
+
 }
