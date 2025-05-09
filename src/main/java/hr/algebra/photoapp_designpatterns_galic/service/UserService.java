@@ -25,14 +25,14 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void registerLocalUser(String email, String password, PackageType packageType) {
+    public void registerUser(String email, String password, PackageType packageType, AuthProvider authProvider) {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("Email already registered");
         }
 
         String encodedPassword = passwordEncoder.encode(password);
         User user = new User(email, encodedPassword, Role.REGISTERED, packageType);
-        user.setAuthProvider(AuthProvider.LOCAL);
+        user.setAuthProvider(authProvider);
         userRepository.save(user);
     }
 
