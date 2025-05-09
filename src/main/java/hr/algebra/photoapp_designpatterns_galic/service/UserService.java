@@ -1,5 +1,6 @@
 package hr.algebra.photoapp_designpatterns_galic.service;
 
+import hr.algebra.photoapp_designpatterns_galic.model.AuthProvider;
 import hr.algebra.photoapp_designpatterns_galic.model.PackageType;
 import hr.algebra.photoapp_designpatterns_galic.model.Role;
 import hr.algebra.photoapp_designpatterns_galic.model.User;
@@ -24,13 +25,14 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void registerUser(String email, String password, PackageType packageType) {
+    public void registerLocalUser(String email, String password, PackageType packageType) {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("Email already registered");
         }
 
         String encodedPassword = passwordEncoder.encode(password);
         User user = new User(email, encodedPassword, Role.REGISTERED, packageType);
+        user.setAuthProvider(AuthProvider.LOCAL);
         userRepository.save(user);
     }
 

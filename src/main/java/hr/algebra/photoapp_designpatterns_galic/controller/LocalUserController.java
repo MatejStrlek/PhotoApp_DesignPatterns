@@ -10,12 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-public class UserController {
+public class LocalUserController {
     @Autowired
     private UserService userService;
 
     @GetMapping("/register")
-    public String showRegistrationForm() {
+    public String showRegistrationForm(Model model) {
+        model.addAttribute("packageTypes", PackageType.values());
         return "register";
     }
 
@@ -26,8 +27,9 @@ public class UserController {
                                Model model) {
         try {
             PackageType type = PackageType.valueOf(packageType.toUpperCase());
-            userService.registerUser(email, password, type);
+            userService.registerLocalUser(email, password, type);
 
+            model.addAttribute("successMessage", "Registration successful! You can now log in.");
             return "redirect:/login";
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorMessage", "Invalid package selected. Please try again.");
