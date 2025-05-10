@@ -1,8 +1,10 @@
 package hr.algebra.photoapp_designpatterns_galic.controller;
 
 import hr.algebra.photoapp_designpatterns_galic.model.AuthProvider;
+import hr.algebra.photoapp_designpatterns_galic.model.Consumption;
 import hr.algebra.photoapp_designpatterns_galic.model.PackageType;
 import hr.algebra.photoapp_designpatterns_galic.model.User;
+import hr.algebra.photoapp_designpatterns_galic.repository.ConsumptionRepository;
 import hr.algebra.photoapp_designpatterns_galic.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,10 +13,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDate;
+
 @Controller
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private ConsumptionRepository consumptionRepository;
 
     @GetMapping("/")
     public String redirectToRegister() {
@@ -48,7 +54,14 @@ public class UserController {
     @GetMapping("/profile")
     public String showProfile(Model model) {
         User user = userService.getCurrentUser();
+        LocalDate today = LocalDate.now();
+
+        Consumption consumption = consumptionRepository
+                .findByUserAndDate(user, today)
+                .orElse(null);
+
         model.addAttribute("user", user);
+        model.addAttribute("consumption", consumption);
         return "profile";
     }
 

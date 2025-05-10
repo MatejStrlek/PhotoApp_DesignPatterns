@@ -6,3 +6,12 @@ CREATE TABLE IF NOT EXISTS app_user (
     package_type VARCHAR(10) NOT NULL,
     auth_provider VARCHAR(10) NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS consumption (
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id INT NOT NULL,
+    date DATE NOT NULL,
+    upload_size_mb INT NOT NULL,
+    daily_upload_count INT NOT NULL,
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES app_user(id)
+);
