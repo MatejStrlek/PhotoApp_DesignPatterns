@@ -6,6 +6,8 @@ import hr.algebra.photoapp_designpatterns_galic.model.PackageType;
 import hr.algebra.photoapp_designpatterns_galic.model.User;
 import hr.algebra.photoapp_designpatterns_galic.repository.ConsumptionRepository;
 import hr.algebra.photoapp_designpatterns_galic.service.UserService;
+import hr.algebra.photoapp_designpatterns_galic.strategy.PackageLimitStrategy;
+import hr.algebra.photoapp_designpatterns_galic.strategy.PackageLimitStrategyFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +23,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private ConsumptionRepository consumptionRepository;
+    @Autowired
+    private PackageLimitStrategyFactory packageLimitStrategyFactory;
 
     @GetMapping("/")
     public String redirectToRegister() {
@@ -60,8 +64,12 @@ public class UserController {
                 .findByUserAndDate(user, today)
                 .orElse(null);
 
+        PackageLimitStrategy limits = packageLimitStrategyFactory.getPackageLimitStrategy(user.getPackageType());
+
         model.addAttribute("user", user);
         model.addAttribute("consumption", consumption);
+        model.addAttribute("limits", limits);
+
         return "profile";
     }
 
