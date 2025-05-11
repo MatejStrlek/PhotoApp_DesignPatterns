@@ -12,8 +12,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -34,15 +32,6 @@ public class UserService {
         User user = new User(email, encodedPassword, Role.REGISTERED, packageType);
         user.setAuthProvider(authProvider);
         userRepository.save(user);
-    }
-
-    public boolean loginUser(String email, String password) {
-        Optional<User> userOpt = userRepository.findByEmail(email);
-        return userOpt.map(user -> passwordEncoder.matches(password, user.getPassword())).orElse(false);
-    }
-
-    public Optional<PackageType> getUserPackage(String email) {
-        return userRepository.findByEmail(email).map(User::getPackageType);
     }
 
     public User getCurrentUser() {
