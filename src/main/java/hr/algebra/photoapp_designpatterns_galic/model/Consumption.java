@@ -26,10 +26,10 @@ public class Consumption {
     private double maxUploadSizeMb;
     private int dailyUploadCount;
 
-    public Consumption(User user, LocalDate date, int uploadSizeMb, int dailyUploadCount) {
+    public Consumption(User user, LocalDate date, double maxUploadSizeMb, int dailyUploadCount) {
         this.user = user;
         this.date = date;
-        this.maxUploadSizeMb = uploadSizeMb;
+        this.maxUploadSizeMb = maxUploadSizeMb;
         this.dailyUploadCount = dailyUploadCount;
     }
 }
