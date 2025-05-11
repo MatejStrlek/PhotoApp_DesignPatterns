@@ -2,7 +2,7 @@ package hr.algebra.photoapp_designpatterns_galic.strategy;
 
 public class ProPackageStrategy implements PackageLimitStrategy{
     @Override
-    public int getMaxUploadSizeMb() {
+    public double getMaxUploadSizeMb() {
         return 10;
     }
 

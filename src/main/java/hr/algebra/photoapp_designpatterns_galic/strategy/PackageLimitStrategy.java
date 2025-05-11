@@ -1,6 +1,6 @@
 package hr.algebra.photoapp_designpatterns_galic.strategy;
 
 public interface PackageLimitStrategy {
-    int getMaxUploadSizeMb();
+    double getMaxUploadSizeMb();
     int getDailyUploadLimit();
 }

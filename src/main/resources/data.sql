@@ -6,7 +6,7 @@ VALUES
     ('user3@example.com', '$2a$10$xszlj1pbFnz6kKreb3X9pugjNUg0MAcC1ff/NR43oKNthJYYcCRj6', 'REGISTERED', NULL, 'LOCAL');
 
 
-INSERT INTO consumption (user_id, date, upload_size_mb, daily_upload_count)
-VALUES (1, CURRENT_DATE, 90, 90),
-       (2, CURRENT_DATE, 40, 40),
-       (3, CURRENT_DATE, 4, 4);
+INSERT INTO consumption (user_id, date, max_upload_size_mb, daily_upload_count)
+VALUES (1, CURRENT_DATE, 50, 45),
+       (2, CURRENT_DATE, 9, 7),
+       (3, CURRENT_DATE, 3, 2);

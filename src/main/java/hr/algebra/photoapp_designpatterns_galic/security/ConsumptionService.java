@@ -24,7 +24,7 @@ public class ConsumptionService {
         this.strategyFactory = strategyFactory;
     }
 
-    public void recordUpload(int uploadSizeMb) {
+    public void recordUpload(double uploadSizeMb) {
         User user = userService.getCurrentUser();
         PackageLimitStrategy limits = strategyFactory.getPackageLimitStrategy(user.getPackageType());
 
@@ -39,7 +39,7 @@ public class ConsumptionService {
             throw new IllegalArgumentException("Daily upload limit exceeded.");
         }
 
-        consumption.setUploadSizeMb(consumption.getUploadSizeMb() + uploadSizeMb);
+        consumption.setMaxUploadSizeMb(consumption.getMaxUploadSizeMb() + uploadSizeMb);
         consumption.setDailyUploadCount(consumption.getDailyUploadCount() + 1);
 
         consumptionRepository.save(consumption);

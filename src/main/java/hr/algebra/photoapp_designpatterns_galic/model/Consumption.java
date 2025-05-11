@@ -23,13 +23,13 @@ public class Consumption {
     private User user;
 
     private LocalDate date;
-    private int uploadSizeMb;
+    private double maxUploadSizeMb;
     private int dailyUploadCount;
 
     public Consumption(User user, LocalDate date, int uploadSizeMb, int dailyUploadCount) {
         this.user = user;
         this.date = date;
-        this.uploadSizeMb = uploadSizeMb;
+        this.maxUploadSizeMb = uploadSizeMb;
         this.dailyUploadCount = dailyUploadCount;
     }
 }
