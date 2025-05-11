@@ -5,6 +5,7 @@ import hr.algebra.photoapp_designpatterns_galic.model.Consumption;
 import hr.algebra.photoapp_designpatterns_galic.model.PackageType;
 import hr.algebra.photoapp_designpatterns_galic.model.User;
 import hr.algebra.photoapp_designpatterns_galic.repository.ConsumptionRepository;
+import hr.algebra.photoapp_designpatterns_galic.repository.PackageChangeRequestRepository;
 import hr.algebra.photoapp_designpatterns_galic.service.UserService;
 import hr.algebra.photoapp_designpatterns_galic.strategy.PackageLimitStrategy;
 import hr.algebra.photoapp_designpatterns_galic.strategy.PackageLimitStrategyFactory;
@@ -25,6 +26,10 @@ public class UserController {
     private ConsumptionRepository consumptionRepository;
     @Autowired
     private PackageLimitStrategyFactory packageLimitStrategyFactory;
+    @Autowired
+    private PackageChangeRequestRepository packageChangeRequestRepository;
+
+    private static final String PACKAGE_TYPES = "packageTypes";
 
     @GetMapping("/")
     public String redirectToRegister() {
@@ -33,7 +38,7 @@ public class UserController {
 
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
-        model.addAttribute("packageTypes", PackageType.values());
+        model.addAttribute(PACKAGE_TYPES, PackageType.values());
         return "register";
     }
 
@@ -49,7 +54,7 @@ public class UserController {
             model.addAttribute("successMessage", "Registration successful! You can now log in.");
             return "redirect:/login";
         } catch (IllegalArgumentException e) {
-            model.addAttribute("packageTypes", PackageType.values());
+            model.addAttribute(PACKAGE_TYPES, PackageType.values());
             model.addAttribute("errorMessage", "Email is already registered.");
             return "register";
         }
@@ -66,9 +71,14 @@ public class UserController {
 
         PackageLimitStrategy limits = packageLimitStrategyFactory.getPackageLimitStrategy(user.getPackageType());
 
+        packageChangeRequestRepository
+                .findByUser(user)
+                .ifPresent(request -> model.addAttribute("pendingRequest", request));
+
         model.addAttribute("user", user);
         model.addAttribute("consumption", consumption);
         model.addAttribute("limits", limits);
+        model.addAttribute(PACKAGE_TYPES, PackageType.values());
 
         return "profile";
     }

@@ -56,6 +56,27 @@
                             </ul>
                         </div>
                     </div>
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Change your package</h5>
+                            <div class="alert alert-info" th:if="${pendingRequest != null}">
+                                You have already requested to change your package to
+                                <strong th:text="${pendingRequest.requestedPackageType}">GOLD</strong>.
+                                It will take effect tomorrow.
+                            </div>
+                            <form th:action="@{/change-package}" method="post" th:if="${pendingRequest == null}">
+                                <div class="mb-3">
+                                    <label for="packageType" class="form-label">Select new package:</label>
+                                    <select id="packageType" name="packageType" class="form-select" required>
+                                        <option th:each="pkg : ${packageTypes}" th:value="${pkg}" th:text="${pkg}">FREE</option>
+                                    </select>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">Request package change</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                     <div class="mt-4 text-center">
                         <a th:href="@{/photos}" class="btn btn-primary me-2">Go to photos</a>
                         <a th:href="@{/logout}" class="btn btn-outline-danger">Logout</a>
