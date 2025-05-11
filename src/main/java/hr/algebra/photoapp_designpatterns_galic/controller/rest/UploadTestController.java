@@ -14,6 +14,7 @@ public class UploadTestController {
         this.consumptionService = consumptionService;
     }
 
+    //http://localhost:8081/test/upload?size=6
     @RequestMapping(value = "/test/upload", method = {RequestMethod.GET, RequestMethod.POST})
     public ResponseEntity<String> testUpload(@RequestParam("size") int uploadSizeMb) {
         try {
