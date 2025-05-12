@@ -10,6 +10,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -34,12 +37,31 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public boolean needsPackageSelection(User user) {
+        return user.getPackageType() == null;
+    }
+
     public User getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = extractEmailFromAuthentication(auth);
+
+        if (email == null) {
+            throw new UsernameNotFoundException("Email could not be extracted from authenticated principal.");
+        }
 
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+    }
+
+    private String extractEmailFromAuthentication(Authentication auth) {
+        if (auth instanceof OAuth2AuthenticationToken token) {
+            Object principal = token.getPrincipal();
+            if (principal instanceof OAuth2User user) {
+                return user.getAttribute("email");
+            }
+        }
+
+        return auth.getName();
     }
 
     public void setCurrentUserPackage(PackageType packageType) {
@@ -47,5 +69,4 @@ public class UserService {
         currentUser.setPackageType(packageType);
         userRepository.save(currentUser);
     }
-
 }

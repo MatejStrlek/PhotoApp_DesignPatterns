@@ -1,6 +1,6 @@
 package hr.algebra.photoapp_designpatterns_galic.controller.rest;
 
-import hr.algebra.photoapp_designpatterns_galic.security.ConsumptionService;
+import hr.algebra.photoapp_designpatterns_galic.service.ConsumptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

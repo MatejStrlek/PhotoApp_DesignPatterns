@@ -4,7 +4,7 @@ import hr.algebra.photoapp_designpatterns_galic.model.Consumption;
 import hr.algebra.photoapp_designpatterns_galic.model.PackageType;
 import hr.algebra.photoapp_designpatterns_galic.model.User;
 import hr.algebra.photoapp_designpatterns_galic.repository.ConsumptionRepository;
-import hr.algebra.photoapp_designpatterns_galic.security.ConsumptionService;
+import hr.algebra.photoapp_designpatterns_galic.service.ConsumptionService;
 import hr.algebra.photoapp_designpatterns_galic.service.UserService;
 import hr.algebra.photoapp_designpatterns_galic.strategy.PackageLimitStrategy;
 import hr.algebra.photoapp_designpatterns_galic.strategy.PackageLimitStrategyFactory;
