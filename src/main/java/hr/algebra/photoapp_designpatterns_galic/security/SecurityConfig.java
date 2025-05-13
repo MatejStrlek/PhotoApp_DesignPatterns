@@ -49,7 +49,6 @@ public class SecurityConfig {
                         .requestMatchers("/", "/login", "/external-login", "/register", "/public/**", "/h2-console/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/photos/**", "/profile/**", "/upload/**").hasAnyRole("REGISTERED", "ADMIN")
-                        .requestMatchers("/public/photos/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form.defaultSuccessUrl("/photos", true))
