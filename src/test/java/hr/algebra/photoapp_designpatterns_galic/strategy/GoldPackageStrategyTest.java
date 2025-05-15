@@ -1,5 +1,6 @@
 package hr.algebra.photoapp_designpatterns_galic.strategy;
 
+import hr.algebra.photoapp_designpatterns_galic.strategy.package_limit.GoldPackageStrategy;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

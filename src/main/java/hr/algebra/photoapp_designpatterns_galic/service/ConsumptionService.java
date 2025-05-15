@@ -3,8 +3,8 @@ package hr.algebra.photoapp_designpatterns_galic.service;
 import hr.algebra.photoapp_designpatterns_galic.model.Consumption;
 import hr.algebra.photoapp_designpatterns_galic.model.User;
 import hr.algebra.photoapp_designpatterns_galic.repository.ConsumptionRepository;
-import hr.algebra.photoapp_designpatterns_galic.strategy.PackageLimitStrategy;
-import hr.algebra.photoapp_designpatterns_galic.strategy.PackageLimitStrategyFactory;
+import hr.algebra.photoapp_designpatterns_galic.strategy.package_limit.PackageLimitStrategy;
+import hr.algebra.photoapp_designpatterns_galic.strategy.package_limit.PackageLimitStrategyFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
