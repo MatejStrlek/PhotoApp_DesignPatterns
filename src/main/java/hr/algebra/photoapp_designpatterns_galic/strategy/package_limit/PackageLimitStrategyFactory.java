@@ -1,4 +1,4 @@
-package hr.algebra.photoapp_designpatterns_galic.strategy;
+package hr.algebra.photoapp_designpatterns_galic.strategy.package_limit;
 
 import hr.algebra.photoapp_designpatterns_galic.model.PackageType;
 import org.springframework.stereotype.Component;
