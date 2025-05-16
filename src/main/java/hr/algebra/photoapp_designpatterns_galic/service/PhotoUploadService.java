@@ -11,9 +11,11 @@ import hr.algebra.photoapp_designpatterns_galic.strategy.image_processing.ImageP
 import hr.algebra.photoapp_designpatterns_galic.strategy.image_processing.ResizeStrategy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,31 +39,43 @@ public class PhotoUploadService {
         this.consumptionService = consumptionService;
     }
 
-    public void uploadPhoto(PhotoUploadDTO photoUploadDTO, String email) throws IOException {
+    public void uploadPhoto(PhotoUploadDTO dto, String email) throws IOException {
         User user = getUserByEmail(email);
-        BufferedImage originalImage = readOriginalImage(photoUploadDTO);
-        BufferedImage processedImage = processImage(originalImage, photoUploadDTO);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found");
+        }
 
-        byte[] imageBytes = encodeImage(processedImage, photoUploadDTO.getImageFormat());
-        double imageSizeMB = calculateSizeInMB(imageBytes);
-        consumptionService.recordUpload(imageSizeMB);
+        MultipartFile uploadedFile = dto.getImage();
+        byte[] originalBytes = uploadedFile.getBytes();
+        BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(originalBytes));
 
-        Path savedPath = saveImageFile(imageBytes, photoUploadDTO.getImageFormat());
-        Photo photo = createPhotoMetadata(savedPath, photoUploadDTO, processedImage, imageSizeMB, user);
+        if (originalImage == null) {
+            throw new IllegalArgumentException("Invalid image file.");
+        }
+
+        String originalExtension = getExtension(uploadedFile.getOriginalFilename());
+        String originalFileName = UUID.randomUUID() + originalExtension;
+        Path originalPath = saveImageFile(originalBytes, originalFileName);
+
+        BufferedImage processedImage = processImage(originalImage, dto);
+        byte[] processedBytes = encodeImage(processedImage, dto.getImageFormat());
+
+        double originalSizeMB = calculateSizeInMB(originalBytes);
+        consumptionService.recordUpload(originalSizeMB);
+
+        String processedFileName = UUID.randomUUID() + "." + dto.getImageFormat().name().toLowerCase();
+        Path processedPath = saveImageFile(processedBytes, processedFileName);
+
+        Photo photo = createPhotoMetadata(originalPath, originalBytes,
+                processedPath, processedBytes,
+                dto, processedImage, user);
+
         photoRepository.save(photo);
     }
 
     private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-    }
-
-    private BufferedImage readOriginalImage(PhotoUploadDTO dto) throws IOException {
-        BufferedImage image = ImageIO.read(dto.getImage().getInputStream());
-        if (image == null) {
-            throw new IllegalArgumentException("Invalid image format.");
-        }
-        return image;
     }
 
     private BufferedImage processImage(BufferedImage original, PhotoUploadDTO dto) {
@@ -79,41 +93,52 @@ public class PhotoUploadService {
     }
 
     private byte[] encodeImage(BufferedImage image, ImageFormat format) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(image, format.getFormatName(), baos);
-        return baos.toByteArray();
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            ImageIO.write(image, format.getFormatName(), baos);
+            return baos.toByteArray();
+        }
     }
 
     private double calculateSizeInMB(byte[] imageBytes) {
         return (double) imageBytes.length / (1024 * 1024);
     }
 
-    private Path saveImageFile(byte[] imageBytes, ImageFormat format) throws IOException {
+    private Path saveImageFile(byte[] imageBytes, String fileName) throws IOException {
         Path uploadDir = Paths.get(uploadPath);
 
         if (!Files.exists(uploadDir)) {
             Files.createDirectories(uploadDir);
         }
 
-        String fileName = UUID.randomUUID() + "." + format.name().toLowerCase();
         Path destination = uploadDir.resolve(fileName);
         Files.write(destination, imageBytes);
-
         return destination;
     }
 
-    private Photo createPhotoMetadata(Path path,
-                                      PhotoUploadDTO dto,
-                                      BufferedImage image,
-                                      double sizeMB,
+    private String getExtension(String filename) {
+        if (filename == null || !filename.contains(".")) {
+            throw new IllegalArgumentException("Invalid filename format.");
+        }
+        return filename.substring(filename.lastIndexOf('.')).toLowerCase();
+    }
+
+    private Photo createPhotoMetadata(Path originalPath, byte[] originalSizeBytes,
+                                      Path processedPath, byte[] processedSizeBytes,
+                                      PhotoUploadDTO dto, BufferedImage image,
                                       User author) {
+
         Photo photo = new Photo();
-        photo.setFileName(path.getFileName().toString());
-        photo.setFilePath(path.toString());
+        photo.setOriginalFilePath(originalPath.toString());
+        photo.setOriginalFileName(originalPath.getFileName().toString());
+        photo.setOriginalFileSizeMb(calculateSizeInMB(originalSizeBytes));
+
+        photo.setProcessedFilePath(processedPath.toString());
+        photo.setProcessedFileName(processedPath.getFileName().toString());
+        photo.setProcessedFileSizeMb(calculateSizeInMB(processedSizeBytes));
+
         photo.setFileType(dto.getImageFormat().name());
         photo.setWidth(image.getWidth());
         photo.setHeight(image.getHeight());
-        photo.setFileSizeMB(sizeMB);
         photo.setDescription(dto.getDescription());
         photo.setHashtags(dto.getHashtags());
         photo.setUploadTime(LocalDateTime.now());

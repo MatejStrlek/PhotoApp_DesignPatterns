@@ -21,14 +21,18 @@ public class Photo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String fileName;
+    private String originalFileName;
+    private String originalFilePath;
+    private double originalFileSizeMb;
+
+    private String processedFileName;
+    private String processedFilePath;
+    private double processedFileSizeMb;
+
     private String fileType;
-    private String filePath;
 
     private int width;
     private int height;
-    @Column(name = "file_size_mb")
-    private double fileSizeMB;
 
     private String description;
 
