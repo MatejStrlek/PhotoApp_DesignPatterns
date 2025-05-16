@@ -9,7 +9,7 @@ import hr.algebra.photoapp_designpatterns_galic.repository.UserRepository;
 import hr.algebra.photoapp_designpatterns_galic.strategy.image_processing.FormatConversionStrategy;
 import hr.algebra.photoapp_designpatterns_galic.strategy.image_processing.ImageProcessingContext;
 import hr.algebra.photoapp_designpatterns_galic.strategy.image_processing.ResizeStrategy;
-import org.springframework.beans.factory.annotation.Value;
+import hr.algebra.photoapp_designpatterns_galic.strategy.image_storage.ImageStorageStrategy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,9 +18,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -29,14 +27,13 @@ public class PhotoUploadService {
     private final PhotoRepository photoRepository;
     private final UserRepository userRepository;
     private final ConsumptionService consumptionService;
+    private final ImageStorageStrategy imageStorageStrategy;
 
-    @Value("${upload.path}")
-    private String uploadPath;
-
-    public PhotoUploadService(PhotoRepository photoRepository, UserRepository userRepository, ConsumptionService consumptionService) {
+    public PhotoUploadService(PhotoRepository photoRepository, UserRepository userRepository, ConsumptionService consumptionService, ImageStorageStrategy imageStorageStrategy) {
         this.photoRepository = photoRepository;
         this.userRepository = userRepository;
         this.consumptionService = consumptionService;
+        this.imageStorageStrategy = imageStorageStrategy;
     }
 
     public void uploadPhoto(PhotoUploadDTO dto, String email) throws IOException {
@@ -53,18 +50,18 @@ public class PhotoUploadService {
             throw new IllegalArgumentException("Invalid image file.");
         }
 
+        double originalSizeMB = calculateSizeInMB(originalBytes);
+        consumptionService.recordUpload(originalSizeMB);
+
         String originalExtension = getExtension(uploadedFile.getOriginalFilename());
         String originalFileName = UUID.randomUUID() + originalExtension;
-        Path originalPath = saveImageFile(originalBytes, originalFileName);
+        Path originalPath = imageStorageStrategy.storeImage(originalBytes, originalFileName);
 
         BufferedImage processedImage = processImage(originalImage, dto);
         byte[] processedBytes = encodeImage(processedImage, dto.getImageFormat());
 
-        double originalSizeMB = calculateSizeInMB(originalBytes);
-        consumptionService.recordUpload(originalSizeMB);
-
         String processedFileName = UUID.randomUUID() + "." + dto.getImageFormat().name().toLowerCase();
-        Path processedPath = saveImageFile(processedBytes, processedFileName);
+        Path processedPath = imageStorageStrategy.storeImage(processedBytes, processedFileName);
 
         Photo photo = createPhotoMetadata(originalPath, originalBytes,
                 processedPath, processedBytes,
@@ -103,18 +100,6 @@ public class PhotoUploadService {
         return (double) imageBytes.length / (1024 * 1024);
     }
 
-    private Path saveImageFile(byte[] imageBytes, String fileName) throws IOException {
-        Path uploadDir = Paths.get(uploadPath);
-
-        if (!Files.exists(uploadDir)) {
-            Files.createDirectories(uploadDir);
-        }
-
-        Path destination = uploadDir.resolve(fileName);
-        Files.write(destination, imageBytes);
-        return destination;
-    }
-
     private String getExtension(String filename) {
         if (filename == null || !filename.contains(".")) {
             throw new IllegalArgumentException("Invalid filename format.");
@@ -126,8 +111,8 @@ public class PhotoUploadService {
                                       Path processedPath, byte[] processedSizeBytes,
                                       PhotoUploadDTO dto, BufferedImage image,
                                       User author) {
-
         Photo photo = new Photo();
+
         photo.setOriginalFilePath(originalPath.toString());
         photo.setOriginalFileName(originalPath.getFileName().toString());
         photo.setOriginalFileSizeMb(calculateSizeInMB(originalSizeBytes));
