@@ -37,11 +37,11 @@ public class PhotoUploadService {
 
     public void uploadPhoto(PhotoUploadDTO photoUploadDTO, String email) throws IOException {
         var user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found."));
 
         BufferedImage originalImage = ImageIO.read(photoUploadDTO.getImage().getInputStream());
         if (originalImage == null) {
-            throw new IllegalArgumentException("Invalid image format");
+            throw new IllegalArgumentException("Invalid image format.");
         }
 
         ImageProcessingContext imageProcessingContext = new ImageProcessingContext();
