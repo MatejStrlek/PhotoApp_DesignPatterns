@@ -6,6 +6,7 @@ import hr.algebra.photoapp_designpatterns_galic.repository.PhotoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PhotoShowService {
@@ -21,5 +22,9 @@ public class PhotoShowService {
 
     public List<Photo> findPhotosByAuthor(User author) {
         return photoRepository.findByAuthor(author);
+    }
+
+    public Optional<Photo> findPhotoById(Long id) {
+        return photoRepository.findById(id);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -23,5 +24,14 @@ public class PublicPhotoController {
         List<Photo> photos = photoShowService.findLast10AllPhotos();
         model.addAttribute("photos", photos);
         return "public-photos";
+    }
+
+    @GetMapping("/photos/view/{id}")
+    public String viewPhoto(@PathVariable Long id, Model model) {
+        Photo photo = photoShowService.findPhotoById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Photo not found"));
+
+        model.addAttribute("photo", photo);
+        return "photo-view";
     }
 }
