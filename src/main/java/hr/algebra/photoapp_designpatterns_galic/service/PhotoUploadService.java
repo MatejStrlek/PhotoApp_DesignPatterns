@@ -5,6 +5,7 @@ import hr.algebra.photoapp_designpatterns_galic.model.ImageFormat;
 import hr.algebra.photoapp_designpatterns_galic.model.Photo;
 import hr.algebra.photoapp_designpatterns_galic.model.User;
 import hr.algebra.photoapp_designpatterns_galic.repository.PhotoRepository;
+import hr.algebra.photoapp_designpatterns_galic.decorator.PhotoUploadComponent;
 import hr.algebra.photoapp_designpatterns_galic.repository.UserRepository;
 import hr.algebra.photoapp_designpatterns_galic.strategy.image_processing.FormatConversionStrategy;
 import hr.algebra.photoapp_designpatterns_galic.strategy.image_processing.ImageProcessingContext;
@@ -23,7 +24,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
-public class PhotoUploadService {
+public class PhotoUploadService implements PhotoUploadComponent {
     private final PhotoRepository photoRepository;
     private final UserRepository userRepository;
     private final ConsumptionService consumptionService;
@@ -36,6 +37,7 @@ public class PhotoUploadService {
         this.imageStorageStrategy = imageStorageStrategy;
     }
 
+    @Override
     public void uploadPhoto(PhotoUploadDTO dto, String email) throws IOException {
         User user = getUserByEmail(email);
         if (user == null) {

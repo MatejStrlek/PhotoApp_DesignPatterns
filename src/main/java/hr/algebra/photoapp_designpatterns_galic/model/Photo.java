@@ -31,6 +31,8 @@ public class Photo {
 
     private String fileType;
 
+    private String thumbnailFileName;
+
     private int width;
     private int height;
 

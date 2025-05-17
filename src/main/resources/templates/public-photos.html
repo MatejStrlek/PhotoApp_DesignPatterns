@@ -17,9 +17,22 @@
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
         <div class="col" th:each="photo : ${photos}">
             <div class="card shadow-sm h-100">
-                <img th:src="@{/images/{filename}(filename=${photo})}" class="card-img-top" alt="Public Photo">
+                <a th:href="@{/photos/view/{id}(id=${photo.id})}">
+                    <img th:src="@{/uploads/thumbnails/{filename}(filename=${photo.thumbnailFileName})}"
+                         class="card-img-top" th:alt="${photo.description}" />
+                </a>
                 <div class="card-body">
-                    <p class="card-text text-center" th:text="${photo}">photo.jpg</p>
+                    <h6 class="card-title text-center" th:text="${photo.description}">Description</h6>
+                    <p class="card-text text-center small text-muted"
+                       th:text="${#temporals.format(photo.uploadTime, 'yyyy-MM-dd HH:mm')}">Upload date</p>
+                    <p class="text-center text-muted small">
+                        By <span th:text="${photo.author.email}">user@example.com</span>
+                    </p>
+                    <p class="text-center">
+                        <span th:each="tag : ${photo.hashtags}"
+                              class="badge bg-secondary me-1"
+                              th:text="${tag}">#tag</span>
+                    </p>
                 </div>
             </div>
         </div>
@@ -28,7 +41,6 @@
         <div class="col">
             <p class="fw-bold">Want to upload your photos?</p>
             <p class="text-muted">Only registered users can upload or manage their own photos.</p>
-
             <div class="d-flex justify-content-center gap-3 mt-3">
                 <a th:href="@{/login}" class="btn btn-outline-primary bi bi-person"> Local login</a>
                 <a th:href="@{/external-login}" class="btn btn-outline-secondary">Login with Google/GitHub</a>

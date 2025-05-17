@@ -1,8 +1,10 @@
 package hr.algebra.photoapp_designpatterns_galic.controller;
 
+import hr.algebra.photoapp_designpatterns_galic.decorator.PhotoUploadComponent;
 import hr.algebra.photoapp_designpatterns_galic.dto.PhotoUploadDTO;
+import hr.algebra.photoapp_designpatterns_galic.model.Photo;
 import hr.algebra.photoapp_designpatterns_galic.model.User;
-import hr.algebra.photoapp_designpatterns_galic.service.PhotoUploadService;
+import hr.algebra.photoapp_designpatterns_galic.service.PhotoShowService;
 import hr.algebra.photoapp_designpatterns_galic.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +22,16 @@ import java.util.List;
 @Controller
 public class PhotoController {
     private final UserService userService;
-    private final PhotoUploadService photoUploadService;
+    private final PhotoUploadComponent photoUploadComponent;
+    private final PhotoShowService photoShowService;
 
     public static final String PHOTO_UPLOAD_PAGE = "photo-upload";
 
     @Autowired
-    public PhotoController(UserService userService, PhotoUploadService photoUploadService) {
+    public PhotoController(UserService userService, PhotoUploadComponent photoUploadComponent, PhotoShowService photoShowService) {
         this.userService = userService;
-        this.photoUploadService = photoUploadService;
+        this.photoUploadComponent = photoUploadComponent;
+        this.photoShowService = photoShowService;
     }
 
     @GetMapping("/photos")
@@ -37,10 +41,9 @@ public class PhotoController {
             return "redirect:/select-package";
         }
 
-        List<String> photoNames = List.of("beach.jpg", "mountain.png", "family-photo.jpeg");
-
+        List<Photo> userPhotos = photoShowService.findPhotosByAuthor(currentUser);
         model.addAttribute("user", currentUser);
-        model.addAttribute("photos", photoNames);
+        model.addAttribute("photos", userPhotos);
 
         return "photos";
     }
@@ -62,7 +65,7 @@ public class PhotoController {
 
         try {
             String email = userService.getCurrentUser().getEmail();
-            photoUploadService.uploadPhoto(photoUploadDTO, email);
+            photoUploadComponent.uploadPhoto(photoUploadDTO, email);
             redirectAttributes.addFlashAttribute("uploadSuccess", "Photo uploaded successfully!");
             return "redirect:/photos";
         } catch (IOException e) {

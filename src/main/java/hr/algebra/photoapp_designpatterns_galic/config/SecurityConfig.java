@@ -1,4 +1,4 @@
-package hr.algebra.photoapp_designpatterns_galic.security;
+package hr.algebra.photoapp_designpatterns_galic.config;
 
 import hr.algebra.photoapp_designpatterns_galic.model.AuthProvider;
 import hr.algebra.photoapp_designpatterns_galic.model.Role;
