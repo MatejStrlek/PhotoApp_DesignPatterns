@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
@@ -75,5 +76,20 @@ public class PhotoController {
             model.addAttribute("uploadError", e.getMessage());
             return PHOTO_UPLOAD_PAGE;
         }
+    }
+
+    @PostMapping("/photos/update")
+    public String handleUpdate(@RequestParam Long id,
+                               @RequestParam String description,
+                               @RequestParam String hashtags,
+                               RedirectAttributes redirectAttributes) {
+        try {
+            photoShowService.updatePhotoMetadata(id, description, hashtags);
+            redirectAttributes.addFlashAttribute("uploadSuccess", "Photo updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("uploadError", e.getMessage());
+        }
+
+        return "redirect:/photos";
     }
 }

@@ -3,17 +3,22 @@ package hr.algebra.photoapp_designpatterns_galic.service;
 import hr.algebra.photoapp_designpatterns_galic.model.Photo;
 import hr.algebra.photoapp_designpatterns_galic.model.User;
 import hr.algebra.photoapp_designpatterns_galic.repository.PhotoRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class PhotoShowService {
     private final PhotoRepository photoRepository;
+    private final UserService userService;
 
-    public PhotoShowService(PhotoRepository photoRepository) {
+    public PhotoShowService(PhotoRepository photoRepository, UserService userService) {
         this.photoRepository = photoRepository;
+        this.userService = userService;
     }
 
     public List<Photo> findLast10AllPhotos() {
@@ -26,5 +31,25 @@ public class PhotoShowService {
 
     public Optional<Photo> findPhotoById(Long id) {
         return photoRepository.findById(id);
+    }
+
+    @Transactional
+    public void updatePhotoMetadata(Long id, String description, String hashtagsCsv) {
+        Photo photo = photoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Photo not found."));
+
+        User currentUser = userService.getCurrentUser();
+        if (!photo.getAuthor().equals(currentUser)) {
+            throw new SecurityException("You are not authorized to update this photo.");
+        }
+
+        photo.setDescription(description);
+        List<String> hashtags = Arrays.stream(hashtagsCsv.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList();
+        photo.setHashtags(new ArrayList<>(hashtags));
+
+        photoRepository.save(photo);
     }
 }
