@@ -1,11 +1,13 @@
 package hr.algebra.photoapp_designpatterns_galic.service;
 
+import hr.algebra.photoapp_designpatterns_galic.dto.PhotoSearchDTO;
 import hr.algebra.photoapp_designpatterns_galic.model.Photo;
 import hr.algebra.photoapp_designpatterns_galic.model.User;
 import hr.algebra.photoapp_designpatterns_galic.repository.PhotoRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -51,5 +53,27 @@ public class PhotoShowService {
         photo.setHashtags(new ArrayList<>(hashtags));
 
         photoRepository.save(photo);
+    }
+
+    public List<Photo> searchPhotos(PhotoSearchDTO filters) {
+        String author = normalize(filters.getAuthor());
+        String hashtag = normalize(filters.getHashtag());
+        Double minSize = filters.getMinSize() != null ? filters.getMinSize() : null;
+        Double maxSize = filters.getMaxSize() != null ? filters.getMaxSize() : null;
+        LocalDateTime startDate = filters.getStartDate();
+        LocalDateTime endDate = filters.getEndDate();
+
+        return photoRepository.searchPhotos(
+                author,
+                hashtag,
+                minSize,
+                maxSize,
+                startDate,
+                endDate
+        );
+    }
+
+    private String normalize(String input) {
+        return (input == null || input.trim().isEmpty()) ? null : input.trim().toLowerCase();
     }
 }

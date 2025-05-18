@@ -1,11 +1,13 @@
 package hr.algebra.photoapp_designpatterns_galic.controller;
 
+import hr.algebra.photoapp_designpatterns_galic.dto.PhotoSearchDTO;
 import hr.algebra.photoapp_designpatterns_galic.model.Photo;
 import hr.algebra.photoapp_designpatterns_galic.service.PhotoShowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
@@ -23,6 +25,7 @@ public class PublicPhotoController {
     public String showPublicPhotos(Model model) {
         List<Photo> photos = photoShowService.findLast10AllPhotos();
         model.addAttribute("photos", photos);
+        model.addAttribute("searchDTO", new PhotoSearchDTO());
         return "public-photos";
     }
 
@@ -33,5 +36,12 @@ public class PublicPhotoController {
 
         model.addAttribute("photo", photo);
         return "photo-view";
+    }
+
+    @GetMapping("/public/photos/search")
+    public String searchPhotos(@ModelAttribute("searchDTO") PhotoSearchDTO filter, Model model) {
+        List<Photo> filteredPhotos = photoShowService.searchPhotos(filter);
+        model.addAttribute("photos", filteredPhotos);
+        return "public-photos";
     }
 }
