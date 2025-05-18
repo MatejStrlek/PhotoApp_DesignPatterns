@@ -89,7 +89,6 @@ public class PhotoController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("uploadError", e.getMessage());
         }
-
         return "redirect:/photos";
     }
 }

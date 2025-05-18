@@ -44,7 +44,6 @@ public class PackageController {
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
         }
-
         return "redirect:/profile";
     }
 }

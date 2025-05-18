@@ -50,12 +50,13 @@ public class UserController {
         try {
             PackageType type = PackageType.valueOf(packageType.toUpperCase());
             userService.registerUser(email, password, type, AuthProvider.LOCAL);
-
             model.addAttribute("successMessage", "Registration successful! You can now log in.");
+
             return "redirect:/login";
         } catch (IllegalArgumentException e) {
             model.addAttribute(PACKAGE_TYPES, PackageType.values());
             model.addAttribute("errorMessage", "Email is already registered.");
+
             return "register";
         }
     }

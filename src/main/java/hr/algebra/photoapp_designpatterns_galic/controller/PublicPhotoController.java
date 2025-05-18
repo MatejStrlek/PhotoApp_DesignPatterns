@@ -33,7 +33,6 @@ public class PublicPhotoController {
     public String viewPhoto(@PathVariable Long id, Model model) {
         Photo photo = photoShowService.findPhotoById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Photo not found"));
-
         model.addAttribute("photo", photo);
         return "photo-view";
     }
