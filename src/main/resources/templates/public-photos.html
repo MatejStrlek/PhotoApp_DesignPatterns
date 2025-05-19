@@ -71,6 +71,14 @@
                               class="badge bg-secondary me-1"
                               th:text="${tag}">#tag</span>
                     </p>
+                    <div class="d-flex justify-content-center gap-2 mt-3">
+                        <a th:href="@{/public/photos/download/original/{id}(id=${photo.id})}" class="btn btn-outline-primary btn-sm">
+                            Download original photo
+                        </a>
+                        <a th:href="@{/public/photos/download/processed/{id}(id=${photo.id})}" class="btn btn-outline-info btn-sm">
+                            Download processed photo
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
