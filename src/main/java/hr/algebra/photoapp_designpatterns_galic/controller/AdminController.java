@@ -3,6 +3,7 @@ package hr.algebra.photoapp_designpatterns_galic.controller;
 import hr.algebra.photoapp_designpatterns_galic.model.User;
 import hr.algebra.photoapp_designpatterns_galic.service.PackageService;
 import hr.algebra.photoapp_designpatterns_galic.service.UserService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -47,8 +48,14 @@ public class AdminController {
     }
 
     @GetMapping("/users/delete/{id}")
-    public String deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-        return "redirect:/admin/users";
+    public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            userService.deleteUser(id);
+            redirectAttributes.addFlashAttribute("uploadSuccess", "User deleted successfully!");
+            return "redirect:/admin/users";
+        } catch (DataIntegrityViolationException ex) {
+            redirectAttributes.addFlashAttribute("uploadError", "Cannot delete user with linked data.");
+            return "redirect:/admin/users";
+        }
     }
 }
