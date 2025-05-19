@@ -1,7 +1,7 @@
 package hr.algebra.photoapp_designpatterns_galic.controller;
 
 import hr.algebra.photoapp_designpatterns_galic.model.PackageType;
-import hr.algebra.photoapp_designpatterns_galic.service.PackageChangeService;
+import hr.algebra.photoapp_designpatterns_galic.service.PackageService;
 import hr.algebra.photoapp_designpatterns_galic.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class PackageController {
     private final UserService userService;
-    private final PackageChangeService packageChangeService;
+    private final PackageService packageService;
 
     @Autowired
-    public PackageController(UserService userService, PackageChangeService packageChangeService) {
+    public PackageController(UserService userService, PackageService packageService) {
         this.userService = userService;
-        this.packageChangeService = packageChangeService;
+        this.packageService = packageService;
     }
 
     @GetMapping("/select-package")
@@ -38,7 +38,7 @@ public class PackageController {
     public String changePackage(@RequestParam("packageType") String packageType, Model model) {
         try {
             PackageType newType = PackageType.valueOf(packageType.toUpperCase());
-            packageChangeService.requestPackageChange(newType);
+            packageService.requestPackageChange(newType);
 
             model.addAttribute("success", "Your package change to " + newType + " has been scheduled and will take effect tomorrow.");
         } catch (Exception e) {

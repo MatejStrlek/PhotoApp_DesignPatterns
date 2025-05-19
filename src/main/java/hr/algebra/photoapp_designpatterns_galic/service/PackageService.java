@@ -8,15 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
-public class PackageChangeService {
+public class PackageService {
     private final UserService userService;
     private final PackageChangeRequestRepository requestRepository;
 
     @Autowired
-    public PackageChangeService(UserService userService, PackageChangeRequestRepository requestRepository) {
+    public PackageService(UserService userService, PackageChangeRequestRepository requestRepository) {
         this.userService = userService;
         this.requestRepository = requestRepository;
     }
@@ -37,5 +38,9 @@ public class PackageChangeService {
         changeRequest.setRequestDate(today);
 
         requestRepository.save(changeRequest);
+    }
+
+    public List<PackageType> getAllPackages() {
+        return List.of(PackageType.values());
     }
 }

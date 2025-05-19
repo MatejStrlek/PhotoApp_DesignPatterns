@@ -14,6 +14,9 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -67,5 +70,24 @@ public class UserService {
         User currentUser = getCurrentUser();
         currentUser.setPackageType(packageType);
         userRepository.save(currentUser);
+    }
+
+    public void updateUser(Long id, String role, String packageType) {
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        user.setRole(Role.valueOf(role));
+        user.setPackageType(PackageType.valueOf(packageType));
+        userRepository.save(user);
+    }
+
+    public List<User> findAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
+    }
+
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
     }
 }
