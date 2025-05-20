@@ -2,6 +2,7 @@ package hr.algebra.photoapp_designpatterns_galic.service;
 
 import hr.algebra.photoapp_designpatterns_galic.dto.PhotoSearchDTO;
 import hr.algebra.photoapp_designpatterns_galic.model.Photo;
+import hr.algebra.photoapp_designpatterns_galic.model.Role;
 import hr.algebra.photoapp_designpatterns_galic.model.User;
 import hr.algebra.photoapp_designpatterns_galic.repository.PhotoRepository;
 import jakarta.transaction.Transactional;
@@ -41,7 +42,10 @@ public class PhotoShowService {
                 .orElseThrow(() -> new IllegalArgumentException("Photo not found."));
 
         User currentUser = userService.getCurrentUser();
-        if (!photo.getAuthor().equals(currentUser)) {
+        boolean isOwner = photo.getAuthor().equals(currentUser);
+        boolean isAdmin = currentUser.getRole() == Role.ADMIN;
+
+        if (!isOwner && !isAdmin) {
             throw new SecurityException("You are not authorized to update this photo.");
         }
 
@@ -75,5 +79,13 @@ public class PhotoShowService {
 
     private String normalize(String input) {
         return (input == null || input.trim().isEmpty()) ? null : input.trim().toLowerCase();
+    }
+
+    public List<Photo> findAllPhotos() {
+        return photoRepository.findAllByOrderByUploadTimeDesc();
+    }
+
+    public void deletePhotoById(Long id) {
+        photoRepository.deleteById(id);
     }
 }

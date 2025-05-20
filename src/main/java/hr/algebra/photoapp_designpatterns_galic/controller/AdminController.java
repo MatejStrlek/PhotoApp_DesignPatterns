@@ -2,6 +2,7 @@ package hr.algebra.photoapp_designpatterns_galic.controller;
 
 import hr.algebra.photoapp_designpatterns_galic.model.User;
 import hr.algebra.photoapp_designpatterns_galic.service.PackageService;
+import hr.algebra.photoapp_designpatterns_galic.service.PhotoShowService;
 import hr.algebra.photoapp_designpatterns_galic.service.UserService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,10 +17,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AdminController {
     private final UserService userService;
     private final PackageService packageService;
+    private final PhotoShowService photoShowService;
 
-    public AdminController(UserService userService, PackageService packageService) {
+    public AdminController(UserService userService, PackageService packageService, PhotoShowService photoShowService) {
         this.userService = userService;
         this.packageService = packageService;
+        this.photoShowService = photoShowService;
     }
 
     @GetMapping("/users")
@@ -56,6 +59,24 @@ public class AdminController {
         } catch (DataIntegrityViolationException ex) {
             redirectAttributes.addFlashAttribute("uploadError", "Cannot delete user with linked data.");
             return "redirect:/admin/users";
+        }
+    }
+
+    @GetMapping("/photos")
+    public String viewAllPhotos(Model model) {
+        model.addAttribute("photos", photoShowService.findAllPhotos());
+        return "admin/all-photos";
+    }
+
+    @GetMapping("/photos/delete/{id}")
+    public String deletePhoto(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            photoShowService.deletePhotoById(id);
+            redirectAttributes.addFlashAttribute("deleteSuccess", "Photo deleted successfully!");
+            return "redirect:/admin/photos";
+        } catch (DataIntegrityViolationException ex) {
+            redirectAttributes.addFlashAttribute("deleteError", "Cannot delete photo with linked data.");
+            return "redirect:/admin/photos";
         }
     }
 }

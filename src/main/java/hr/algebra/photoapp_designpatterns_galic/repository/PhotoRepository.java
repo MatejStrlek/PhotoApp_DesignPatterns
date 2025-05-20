@@ -36,4 +36,5 @@ public interface PhotoRepository extends JpaRepository<Photo, Long> {
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );
+    List<Photo> findAllByOrderByUploadTimeDesc();
 }
