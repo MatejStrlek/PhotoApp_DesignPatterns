@@ -53,6 +53,10 @@ public class SecurityConfig {
                         .requestMatchers("/photos/**", "/profile/**").hasAnyRole("REGISTERED", "ADMIN")
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(
+                        exception -> exception
+                                .accessDeniedPage("/error/403")
+                )
                 .formLogin(form -> form.defaultSuccessUrl("/photos", true))
                 .logout(LogoutConfigurer::permitAll)
                 .oauth2Login(oauth2 -> oauth2
