@@ -18,15 +18,11 @@
     <form th:action="@{/photos/upload}" method="post" enctype="multipart/form-data" th:object="${photoUploadDTO}" class="card p-4 shadow-sm">
         <div class="mb-3">
             <label class="form-label">Description:</label>
-            <label>
                 <input type="text" th:field="*{description}" class="form-control" placeholder="Enter photo description" required>
-            </label>
         </div>
         <div class="mb-3">
             <label class="form-label">Hashtags (comma separated):</label>
-            <label>
                 <input type="text" th:field="*{hashtags}" class="form-control" placeholder="#nature, #travel" required>
-            </label>
         </div>
         <div class="mb-3">
             <label class="form-label">Image file:</label>

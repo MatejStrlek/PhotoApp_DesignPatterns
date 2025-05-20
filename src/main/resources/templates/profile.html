@@ -81,7 +81,8 @@
                         <a th:href="@{/photos}" class="btn btn-primary me-2">Go to my photos</a>
                         <a th:href="@{/logout}" class="btn btn-outline-danger">Logout</a>
                         <div class="mt-3" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
-                            <a th:href="@{/admin/users}" class="btn btn-warning">Admin panel</a>
+                            <a th:href="@{/admin/users}" class="btn btn-warning">Users Admin panel</a>
+                            <a th:href="@{/admin/photos}" class="btn btn-warning">Photos Admin panel</a>
                         </div>
                     </div>
                 </div>

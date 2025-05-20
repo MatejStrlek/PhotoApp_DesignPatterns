@@ -33,17 +33,13 @@
                         <input type="hidden" name="id" th:value="${photo.id}" />
                         <div class="mb-2">
                             <label class="form-label small">Description</label>
-                            <label>
                                 <input type="text" name="description"
                                        th:value="${photo.description}" class="form-control form-control-sm" />
-                            </label>
                         </div>
                         <div class="mb-2">
                             <label class="form-label small">Hashtags (comma-separated)</label>
-                            <label>
                                 <input type="text" name="hashtags"
                                        th:value="${#strings.arrayJoin(photo.hashtags, ', ')}" class="form-control form-control-sm" />
-                            </label>
                         </div>
                         <button type="submit" class="btn btn-sm btn-primary w-100">Update</button>
                     </form>
@@ -61,6 +57,10 @@
         <div class="d-flex justify-content-center gap-3 flex-wrap">
             <a th:href="@{/public/photos}" class="btn btn-secondary">View all public photos</a>
             <a th:href="@{/profile}" class="btn btn-outline-secondary">View profile</a>
+            <div th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                <a th:href="@{/admin/users}" class="btn btn-warning">Users Admin panel</a>
+                <a th:href="@{/admin/photos}" class="btn btn-warning">Photos Admin panel</a>
+            </div>
             <a th:href="@{/logout}" class="btn btn-outline-danger">Logout</a>
         </div>
     </div>
