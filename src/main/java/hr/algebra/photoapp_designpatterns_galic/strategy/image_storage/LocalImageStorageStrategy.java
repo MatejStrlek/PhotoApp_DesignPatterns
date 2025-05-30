@@ -16,7 +16,7 @@ public class LocalImageStorageStrategy implements ImageStorageStrategy {
     private String uploadPath;
 
     @Override
-    public Path storeImage(byte[] imageBytes, String fileName) throws IOException {
+    public String storeImage(byte[] imageBytes, String fileName) throws IOException {
         Path uploadDir = Paths.get(uploadPath);
         if (!Files.exists(uploadDir)) {
             Files.createDirectories(uploadDir);
@@ -24,6 +24,6 @@ public class LocalImageStorageStrategy implements ImageStorageStrategy {
 
         Path destination = uploadDir.resolve(fileName);
         Files.write(destination, imageBytes);
-        return destination;
+        return destination.toString();
     }
 }

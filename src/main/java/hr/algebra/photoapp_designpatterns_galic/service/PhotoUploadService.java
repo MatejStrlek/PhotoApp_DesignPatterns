@@ -19,7 +19,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -57,13 +56,13 @@ public class PhotoUploadService implements PhotoUploadComponent {
 
         String originalExtension = getExtension(uploadedFile.getOriginalFilename());
         String originalFileName = UUID.randomUUID() + originalExtension;
-        Path originalPath = imageStorageStrategy.storeImage(originalBytes, originalFileName);
+        String originalPath = imageStorageStrategy.storeImage(originalBytes, originalFileName);
 
         BufferedImage processedImage = processImage(originalImage, dto);
         byte[] processedBytes = encodeImage(processedImage, dto.getImageFormat());
 
         String processedFileName = UUID.randomUUID() + "." + dto.getImageFormat().name().toLowerCase();
-        Path processedPath = imageStorageStrategy.storeImage(processedBytes, processedFileName);
+        String processedPath = imageStorageStrategy.storeImage(processedBytes, processedFileName);
 
         Photo photo = createPhotoMetadata(originalPath, originalBytes,
                 processedPath, processedBytes,
@@ -109,18 +108,18 @@ public class PhotoUploadService implements PhotoUploadComponent {
         return filename.substring(filename.lastIndexOf('.')).toLowerCase();
     }
 
-    private Photo createPhotoMetadata(Path originalPath, byte[] originalSizeBytes,
-                                      Path processedPath, byte[] processedSizeBytes,
+    private Photo createPhotoMetadata(String originalPath, byte[] originalSizeBytes,
+                                      String processedPath, byte[] processedSizeBytes,
                                       PhotoUploadDTO dto, BufferedImage image,
                                       User author) {
         Photo photo = new Photo();
 
-        photo.setOriginalFilePath(originalPath.toString());
-        photo.setOriginalFileName(originalPath.getFileName().toString());
+        photo.setOriginalFilePath(originalPath);
+        photo.setOriginalFileName(originalPath.substring(originalPath.lastIndexOf('/') + 1));
         photo.setOriginalFileSizeMb(calculateSizeInMB(originalSizeBytes));
 
-        photo.setProcessedFilePath(processedPath.toString());
-        photo.setProcessedFileName(processedPath.getFileName().toString());
+        photo.setProcessedFilePath(processedPath);
+        photo.setProcessedFileName(processedPath.substring(processedPath.lastIndexOf('/') + 1));
         photo.setProcessedFileSizeMb(calculateSizeInMB(processedSizeBytes));
 
         photo.setFileType(dto.getImageFormat().name());
