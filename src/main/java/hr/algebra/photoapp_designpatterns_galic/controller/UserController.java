@@ -9,7 +9,6 @@ import hr.algebra.photoapp_designpatterns_galic.repository.PackageChangeRequestR
 import hr.algebra.photoapp_designpatterns_galic.service.UserService;
 import hr.algebra.photoapp_designpatterns_galic.strategy.package_limit.PackageLimitStrategy;
 import hr.algebra.photoapp_designpatterns_galic.strategy.package_limit.PackageLimitStrategyFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,16 +19,19 @@ import java.time.LocalDate;
 
 @Controller
 public class UserController {
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private ConsumptionRepository consumptionRepository;
-    @Autowired
-    private PackageLimitStrategyFactory packageLimitStrategyFactory;
-    @Autowired
-    private PackageChangeRequestRepository packageChangeRequestRepository;
+    private final UserService userService;
+    private final ConsumptionRepository consumptionRepository;
+    private final PackageLimitStrategyFactory packageLimitStrategyFactory;
+    private final PackageChangeRequestRepository packageChangeRequestRepository;
 
     private static final String PACKAGE_TYPES = "packageTypes";
+
+    public UserController(UserService userService, ConsumptionRepository consumptionRepository, PackageLimitStrategyFactory packageLimitStrategyFactory, PackageChangeRequestRepository packageChangeRequestRepository) {
+        this.userService = userService;
+        this.consumptionRepository = consumptionRepository;
+        this.packageLimitStrategyFactory = packageLimitStrategyFactory;
+        this.packageChangeRequestRepository = packageChangeRequestRepository;
+    }
 
     @GetMapping("/")
     public String redirectToRegister() {
@@ -49,7 +51,7 @@ public class UserController {
                                     Model model) {
         try {
             PackageType type = PackageType.valueOf(packageType.toUpperCase());
-            userService.registerUser(email, password, type, AuthProvider.LOCAL);
+            userService.registerLocalUser(email, password, type, AuthProvider.LOCAL);
             model.addAttribute("successMessage", "Registration successful! You can now log in.");
 
             return "redirect:/login";

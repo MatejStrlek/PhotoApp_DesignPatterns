@@ -1,6 +1,7 @@
 package hr.algebra.photoapp_designpatterns_galic.service;
 
 import hr.algebra.photoapp_designpatterns_galic.dto.PhotoUploadDTO;
+import hr.algebra.photoapp_designpatterns_galic.model.ActionType;
 import hr.algebra.photoapp_designpatterns_galic.model.ImageFormat;
 import hr.algebra.photoapp_designpatterns_galic.model.Photo;
 import hr.algebra.photoapp_designpatterns_galic.model.User;
@@ -28,12 +29,20 @@ public class PhotoUploadService implements PhotoUploadComponent {
     private final UserRepository userRepository;
     private final ConsumptionService consumptionService;
     private final ImageStorageStrategy imageStorageStrategy;
+    private final AuditLoggerService auditLoggerService;
 
-    public PhotoUploadService(PhotoRepository photoRepository, UserRepository userRepository, ConsumptionService consumptionService, ImageStorageStrategy imageStorageStrategy) {
+    public PhotoUploadService(
+            PhotoRepository photoRepository,
+            UserRepository userRepository,
+            ConsumptionService consumptionService,
+            ImageStorageStrategy imageStorageStrategy,
+            AuditLoggerService auditLoggerService
+    ) {
         this.photoRepository = photoRepository;
         this.userRepository = userRepository;
         this.consumptionService = consumptionService;
         this.imageStorageStrategy = imageStorageStrategy;
+        this.auditLoggerService = auditLoggerService;
     }
 
     @Override
@@ -69,6 +78,13 @@ public class PhotoUploadService implements PhotoUploadComponent {
                 dto, processedImage, user);
 
         photoRepository.save(photo);
+
+        auditLoggerService.logAction(
+                user,
+                ActionType.UPLOAD,
+                "Photo with ID " + photo.getId()
+                        + " uploaded: " + photo.getOriginalFileName()
+        );
     }
 
     private User getUserByEmail(String email) {

@@ -39,7 +39,6 @@ public class PackageController {
         try {
             PackageType newType = PackageType.valueOf(packageType.toUpperCase());
             packageService.requestPackageChange(newType);
-
             model.addAttribute("success", "Your package change to " + newType + " has been scheduled and will take effect tomorrow.");
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());

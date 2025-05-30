@@ -1,5 +1,6 @@
 package hr.algebra.photoapp_designpatterns_galic.service;
 
+import hr.algebra.photoapp_designpatterns_galic.model.ActionType;
 import hr.algebra.photoapp_designpatterns_galic.model.AuthProvider;
 import hr.algebra.photoapp_designpatterns_galic.model.Role;
 import hr.algebra.photoapp_designpatterns_galic.model.User;
@@ -20,6 +21,8 @@ import java.util.List;
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private AuditLoggerService auditLoggerService;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -37,6 +40,13 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             newUser.setPassword("");
             newUser.setRole(Role.REGISTERED);
             newUser.setAuthProvider(AuthProvider.valueOf(registrationId.toUpperCase()));
+
+            auditLoggerService.logAction(
+                    newUser,
+                    ActionType.REGISTER,
+                    "New user registered via OAuth2: " + email
+            );
+
             return userRepository.save(newUser);
         });
 

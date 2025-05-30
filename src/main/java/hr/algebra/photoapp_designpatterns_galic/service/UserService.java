@@ -1,9 +1,6 @@
 package hr.algebra.photoapp_designpatterns_galic.service;
 
-import hr.algebra.photoapp_designpatterns_galic.model.AuthProvider;
-import hr.algebra.photoapp_designpatterns_galic.model.PackageType;
-import hr.algebra.photoapp_designpatterns_galic.model.Role;
-import hr.algebra.photoapp_designpatterns_galic.model.User;
+import hr.algebra.photoapp_designpatterns_galic.model.*;
 import hr.algebra.photoapp_designpatterns_galic.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -21,14 +18,16 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuditLoggerService auditLoggerService;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuditLoggerService auditLoggerService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.auditLoggerService = auditLoggerService;
     }
 
-    public void registerUser(String email, String password, PackageType packageType, AuthProvider authProvider) {
+    public void registerLocalUser(String email, String password, PackageType packageType, AuthProvider authProvider) {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("Email already registered");
         }
@@ -37,6 +36,12 @@ public class UserService {
         User user = new User(email, encodedPassword, Role.REGISTERED, packageType);
         user.setAuthProvider(authProvider);
         userRepository.save(user);
+
+        auditLoggerService.logAction(
+                user,
+                ActionType.REGISTER,
+                "Local user registered with email: " + email
+        );
     }
 
     public boolean needsPackageSelection(User user) {
@@ -70,6 +75,12 @@ public class UserService {
         User currentUser = getCurrentUser();
         currentUser.setPackageType(packageType);
         userRepository.save(currentUser);
+
+        auditLoggerService.logAction(
+                currentUser,
+                ActionType.SELECT_PACKAGE,
+                "User selected package: " + packageType
+        );
     }
 
     public void updateUser(Long id, String role, String packageType) {
@@ -77,6 +88,12 @@ public class UserService {
         user.setRole(Role.valueOf(role));
         user.setPackageType(PackageType.valueOf(packageType));
         userRepository.save(user);
+
+        auditLoggerService.logAction(
+                getCurrentUser(),
+                ActionType.EDIT,
+                "User updated with role: " + role + " and package: " + packageType
+        );
     }
 
     public List<User> findAllUsers() {
@@ -89,5 +106,10 @@ public class UserService {
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+        auditLoggerService.logAction(
+                getCurrentUser(),
+                ActionType.DELETE,
+                "User deleted with ID: " + id
+        );
     }
 }

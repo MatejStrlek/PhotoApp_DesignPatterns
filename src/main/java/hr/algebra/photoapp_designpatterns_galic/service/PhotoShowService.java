@@ -1,6 +1,7 @@
 package hr.algebra.photoapp_designpatterns_galic.service;
 
 import hr.algebra.photoapp_designpatterns_galic.dto.PhotoSearchDTO;
+import hr.algebra.photoapp_designpatterns_galic.model.ActionType;
 import hr.algebra.photoapp_designpatterns_galic.model.Photo;
 import hr.algebra.photoapp_designpatterns_galic.model.Role;
 import hr.algebra.photoapp_designpatterns_galic.model.User;
@@ -18,10 +19,12 @@ import java.util.Optional;
 public class PhotoShowService {
     private final PhotoRepository photoRepository;
     private final UserService userService;
+    private final AuditLoggerService auditLoggerService;
 
-    public PhotoShowService(PhotoRepository photoRepository, UserService userService) {
+    public PhotoShowService(PhotoRepository photoRepository, UserService userService, AuditLoggerService auditLoggerService) {
         this.photoRepository = photoRepository;
         this.userService = userService;
+        this.auditLoggerService = auditLoggerService;
     }
 
     public List<Photo> findLast10AllPhotos() {
@@ -57,6 +60,13 @@ public class PhotoShowService {
         photo.setHashtags(new ArrayList<>(hashtags));
 
         photoRepository.save(photo);
+
+        auditLoggerService.logAction(
+                currentUser,
+                ActionType.EDIT,
+                "Updated photo metadata for photo ID: " + id + ", Description: "
+                        + description + ", Hashtags: " + hashtags
+        );
     }
 
     public List<Photo> searchPhotos(PhotoSearchDTO filters) {
@@ -66,6 +76,20 @@ public class PhotoShowService {
         Double maxSize = filters.getMaxSize() != null ? filters.getMaxSize() : null;
         LocalDateTime startDate = filters.getStartDate();
         LocalDateTime endDate = filters.getEndDate();
+
+       StringBuilder filtersQuery = new StringBuilder("Filters applied: ");
+       if (author != null) { filtersQuery.append("Author: ").append(author).append(", "); }
+       if (hashtag != null) { filtersQuery.append("Hashtag: ").append(hashtag).append(", "); }
+       if (minSize != null) { filtersQuery.append("Min Size: ").append(minSize).append(", "); }
+       if (maxSize != null) { filtersQuery.append("Max Size: ").append(maxSize).append(", "); }
+       if (startDate != null) { filtersQuery.append("Start Date: ").append(startDate).append(", "); }
+       if (endDate != null) { filtersQuery.append("End Date: ").append(endDate).append(", "); }
+
+        auditLoggerService.logAction(
+                userService.getCurrentUser(),
+                ActionType.SEARCH,
+                filtersQuery.toString()
+        );
 
         return photoRepository.searchPhotos(
                 author,
@@ -87,5 +111,10 @@ public class PhotoShowService {
 
     public void deletePhotoById(Long id) {
         photoRepository.deleteById(id);
+        auditLoggerService.logAction(
+                userService.getCurrentUser(),
+                ActionType.DELETE,
+                "Deleted photo with ID: " + id
+        );
     }
 }

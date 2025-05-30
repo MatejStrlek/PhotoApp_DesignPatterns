@@ -1,5 +1,6 @@
 package hr.algebra.photoapp_designpatterns_galic.service;
 
+import hr.algebra.photoapp_designpatterns_galic.model.ActionType;
 import hr.algebra.photoapp_designpatterns_galic.model.PackageChangeRequest;
 import hr.algebra.photoapp_designpatterns_galic.model.PackageType;
 import hr.algebra.photoapp_designpatterns_galic.model.User;
@@ -15,11 +16,13 @@ import java.util.Optional;
 public class PackageService {
     private final UserService userService;
     private final PackageChangeRequestRepository requestRepository;
+    private final AuditLoggerService auditLoggerService;
 
     @Autowired
-    public PackageService(UserService userService, PackageChangeRequestRepository requestRepository) {
+    public PackageService(UserService userService, PackageChangeRequestRepository requestRepository, AuditLoggerService auditLoggerService) {
         this.userService = userService;
         this.requestRepository = requestRepository;
+        this.auditLoggerService = auditLoggerService;
     }
 
     public void requestPackageChange(PackageType newType) {
@@ -38,6 +41,12 @@ public class PackageService {
         changeRequest.setRequestDate(today);
 
         requestRepository.save(changeRequest);
+
+        auditLoggerService.logAction(
+                user,
+                ActionType.CHANGE_PACKAGE,
+                "Package change requested to " + newType + " on " + today
+        );
     }
 
     public List<PackageType> getAllPackages() {
