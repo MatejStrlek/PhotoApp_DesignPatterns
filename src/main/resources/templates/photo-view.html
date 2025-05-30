@@ -9,8 +9,9 @@
 <div class="container mt-5">
   <h2 class="text-center" th:text="${photo.description}">Photo description</h2>
   <div class="text-center mt-4">
-    <img th:src="@{/uploads/{filename}(filename=${photo.processedFileName})}"
-         class="img-fluid rounded border" alt="Full photo" />
+    <img th:src="${photo.processedFilePath.startsWith('http') ? photo.processedFilePath : '/uploads/' + photo.processedFileName}"
+         th:alt="${photo.description}" class="img-fluid" />
+
   </div>
   <div class="mt-4 text-center">
     <p><strong>Uploaded:</strong> <span th:text="${#temporals.format(photo.uploadTime, 'yyyy-MM-dd HH:mm')}"></span></p>

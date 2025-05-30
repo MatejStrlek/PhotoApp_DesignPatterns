@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -68,15 +70,30 @@ public class PublicPhotoController {
         String photoPath = original ? photo.getOriginalFilePath() : photo.getProcessedFilePath();
         String photoName = original ? photo.getOriginalFileName() : photo.getProcessedFileName();
 
-        Path path = Paths.get(photoPath);
-        if (!path.toFile().exists()) {
-            throw new IOException("File not found");
-        }
+        if (photoPath.startsWith("http")) {
+            try (InputStream in = new URL(photoPath).openStream()) {
+                byte[] bytes = in.readAllBytes();
+                ByteArrayResource resource = new ByteArrayResource(bytes);
 
-        ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
-        return ResponseEntity.ok()
-                .header("Content-Disposition", "attachment; filename=\"" + photoName + "\"")
-                .contentLength(resource.contentLength())
-                .body(resource);
+                return ResponseEntity.ok()
+                        .header("Content-Disposition", "attachment; filename=\"" + photoName + "\"")
+                        .contentLength(resource.contentLength())
+                        .body(resource);
+            } catch (IOException e) {
+                throw new IOException("Cloud image not accessible: " + photoPath, e);
+            }
+        } else {
+            Path path = Paths.get(photoPath);
+            if (!Files.exists(path)) {
+                throw new IOException("File not found: " + photoPath);
+            }
+
+            ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+
+            return ResponseEntity.ok()
+                    .header("Content-Disposition", "attachment; filename=\"" + photoName + "\"")
+                    .contentLength(resource.contentLength())
+                    .body(resource);
+        }
     }
 }
