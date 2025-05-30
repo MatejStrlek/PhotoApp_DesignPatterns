@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 @Component
 @Primary
@@ -39,7 +40,7 @@ public class ThumbnailGeneratingUploader extends PhotoUploadDecorator{
     private void generateThumbnail(PhotoUploadDTO dto, String email) throws IOException {
         try {
             BufferedImage originalImage = ImageIO.read(dto.getImage().getInputStream());
-            String thumbnailPath = thumbnailGenerator.generateThumbnail(originalImage, dto.getImage().getOriginalFilename());
+            String thumbnailPath = thumbnailGenerator.generateThumbnail(originalImage, Objects.requireNonNull(dto.getImage().getOriginalFilename()));
 
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("User not found"));
