@@ -7,36 +7,35 @@ import hr.algebra.photoapp_designpatterns_galic.model.User;
 import hr.algebra.photoapp_designpatterns_galic.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 @Service
-public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+public class CustomOidcUserService extends OidcUserService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private AuditLoggerService auditLoggerService;
 
     @Override
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        OAuth2User oauth2User = new DefaultOAuth2UserService().loadUser(userRequest);
+    public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
+        OidcUser oidcUser = super.loadUser(userRequest);
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        Map<String, Object> attributes = oidcUser.getAttributes();
+        String email = (String)attributes.get("email");
 
-        String email = oauth2User.getAttribute("email");
         if (email == null) {
-            throw new OAuth2AuthenticationException("Email not found in OAuth2 response");
+            throw new OAuth2AuthenticationException("Email not found");
         }
 
-        Optional<User> existing = userRepository.findByEmail(email);
-        User user = existing.orElseGet(() -> {
+        User user = userRepository.findByEmail(email).orElseGet(() -> {
             User newUser = new User();
             newUser.setEmail(email);
             newUser.setPassword("");
@@ -52,10 +51,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 "User logged in with provider: " + registrationId
         );
 
-        return new DefaultOAuth2User(
+        return new DefaultOidcUser(
                 List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())),
-                oauth2User.getAttributes(),
-                "email"
+                oidcUser.getIdToken(),
+                oidcUser.getUserInfo()
         );
     }
 }

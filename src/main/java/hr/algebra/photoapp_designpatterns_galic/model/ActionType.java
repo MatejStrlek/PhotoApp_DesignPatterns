@@ -8,6 +8,7 @@ public enum ActionType {
     DELETE,
     SEARCH,
     VIEW,
+    LOGIN,
     REGISTER,
     SELECT_PACKAGE,
     CHANGE_PACKAGE
