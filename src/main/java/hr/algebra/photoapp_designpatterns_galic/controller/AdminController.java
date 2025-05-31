@@ -94,4 +94,15 @@ public class AdminController {
         model.addAttribute("logs", userLogs);
         return "admin/user-logs";
     }
+
+    @GetMapping("users/{id}/stats")
+    public String viewUserStats(@PathVariable Long id, Model model) {
+        User user = userService.findById(id).orElseThrow();
+        double totalUploadSize = consumptionService.getTotalUploadSizeByUserId(id);
+        int totalDailyUploadsCount = consumptionService.getTotalDailyUploadsByUserId(id);
+        model.addAttribute("user", user);
+        model.addAttribute("totalUploadSize", totalUploadSize);
+        model.addAttribute("totalDailyUploadsCount", totalDailyUploadsCount);
+        return "admin/user-stats";
+    }
 }

@@ -58,4 +58,12 @@ public class ConsumptionService {
 
         consumptionRepository.save(consumption);
     }
+
+    public double getTotalUploadSizeByUserId(Long userId) {
+        return consumptionRepository.getTotalUploadSizeByUserId(userId);
+    }
+
+    public int getTotalDailyUploadsByUserId(Long userId) {
+        return consumptionRepository.getTotalDailyUploadsByUserId(userId);
+    }
 }
