@@ -7,6 +7,7 @@ import hr.algebra.photoapp_designpatterns_galic.repository.AuditLogRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class AuditLoggerService {
@@ -25,5 +26,9 @@ public class AuditLoggerService {
         auditLog.setActionType(actionType);
 
         auditLogRepository.save(auditLog);
+    }
+
+    public List<AuditLog> getUserLogs(Long userId) {
+        return auditLogRepository.findByActorId(userId);
     }
 }

@@ -41,6 +41,7 @@
                    onclick="return confirm('Are you sure you want to delete this user?');">
                     Delete
                 </a>
+                <a th:href="@{/admin/users/{id}/logs(id=${user.id})}" class="btn btn-sm btn-outline-secondary">Logs</a>
             </td>
         </tr>
         </tbody>

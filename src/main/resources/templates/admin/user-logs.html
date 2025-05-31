@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Action Logs</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Audit logs for: <span th:text="${user.email}">user@example.com</span></h2>
+  <div th:if="${#lists.isEmpty(logs)}" class="alert alert-warning text-center">
+    No actions recorded for this user.
+  </div>
+  <table th:if="${!#lists.isEmpty(logs)}" class="table table-bordered table-hover shadow-sm bg-white">
+    <thead class="table-light">
+    <tr>
+      <th>#</th>
+      <th>Timestamp</th>
+      <th>Action type</th>
+      <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="log, stat : ${logs}">
+      <td th:text="${stat.index + 1}">1</td>
+      <td th:text="${#temporals.format(log.timestamp, 'yyyy-MM-dd HH:mm:ss')}">2025-05-30 10:12:30</td>
+      <td th:text="${log.actionType}">UPLOAD</td>
+      <td th:text="${log.action}">Uploaded a photo</td>
+    </tr>
+    </tbody>
+  </table>
+  <div class="text-center mt-4">
+    <a th:href="@{/admin/users}" class="btn btn-secondary">Back to user management</a>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

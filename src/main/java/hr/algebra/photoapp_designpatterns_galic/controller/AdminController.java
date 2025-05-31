@@ -1,6 +1,8 @@
 package hr.algebra.photoapp_designpatterns_galic.controller;
 
+import hr.algebra.photoapp_designpatterns_galic.model.AuditLog;
 import hr.algebra.photoapp_designpatterns_galic.model.User;
+import hr.algebra.photoapp_designpatterns_galic.service.AuditLoggerService;
 import hr.algebra.photoapp_designpatterns_galic.service.PackageService;
 import hr.algebra.photoapp_designpatterns_galic.service.PhotoShowService;
 import hr.algebra.photoapp_designpatterns_galic.service.UserService;
@@ -11,6 +13,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/admin")
 @PreAuthorize("hasRole('ADMIN')")
@@ -18,11 +22,13 @@ public class AdminController {
     private final UserService userService;
     private final PackageService packageService;
     private final PhotoShowService photoShowService;
+    private final AuditLoggerService auditLoggerService;
 
-    public AdminController(UserService userService, PackageService packageService, PhotoShowService photoShowService) {
+    public AdminController(UserService userService, PackageService packageService, PhotoShowService photoShowService, AuditLoggerService auditLoggerService) {
         this.userService = userService;
         this.packageService = packageService;
         this.photoShowService = photoShowService;
+        this.auditLoggerService = auditLoggerService;
     }
 
     @GetMapping("/users")
@@ -78,5 +84,14 @@ public class AdminController {
             redirectAttributes.addFlashAttribute("deleteError", "Cannot delete photo with linked data.");
             return "redirect:/admin/photos";
         }
+    }
+
+    @GetMapping("users/{id}/logs")
+    public String viewUserLogs(@PathVariable Long id, Model model) {
+        User user = userService.findById(id).orElseThrow();
+        List<AuditLog> userLogs = auditLoggerService.getUserLogs(id);
+        model.addAttribute("user", user);
+        model.addAttribute("logs", userLogs);
+        return "admin/user-logs";
     }
 }
