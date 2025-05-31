@@ -26,7 +26,8 @@ public class PhotoController {
     private final PhotoUploadComponent photoUploadComponent;
     private final PhotoShowService photoShowService;
 
-    public static final String PHOTO_UPLOAD_PAGE = "photo-upload";
+    private static final String PHOTO_UPLOAD_PAGE = "photo-upload";
+    private static final String UPLOAD_ERROR = "uploadError";
 
     @Autowired
     public PhotoController(UserService userService, PhotoUploadComponent photoUploadComponent, PhotoShowService photoShowService) {
@@ -70,10 +71,10 @@ public class PhotoController {
             redirectAttributes.addFlashAttribute("uploadSuccess", "Photo uploaded successfully!");
             return "redirect:/photos";
         } catch (IOException e) {
-            model.addAttribute("uploadError", "Error uploading image: " + e.getMessage());
+            model.addAttribute(UPLOAD_ERROR, "Error uploading image: " + e.getMessage());
             return PHOTO_UPLOAD_PAGE;
         } catch (IllegalArgumentException e) {
-            model.addAttribute("uploadError", e.getMessage());
+            model.addAttribute(UPLOAD_ERROR, e.getMessage());
             return PHOTO_UPLOAD_PAGE;
         }
     }
@@ -87,7 +88,7 @@ public class PhotoController {
             photoShowService.updatePhotoMetadata(id, description, hashtags);
             redirectAttributes.addFlashAttribute("uploadSuccess", "Photo updated successfully!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("uploadError", e.getMessage());
+            redirectAttributes.addFlashAttribute(UPLOAD_ERROR, e.getMessage());
         }
         return "redirect:/photos";
     }

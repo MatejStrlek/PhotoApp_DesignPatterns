@@ -28,7 +28,7 @@ public class CloudinaryStorageStrategy implements ImageStorageStrategy {
     }
 
     @Override
-    public String storeImage(byte[] imageBytes, String fileName) {
+    public String storeImage(byte[] imageBytes, String fileName) throws IOException {
         String fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
 
         try {
@@ -38,9 +38,9 @@ public class CloudinaryStorageStrategy implements ImageStorageStrategy {
                             "public_id", fileNameWithoutExtension,
                             "resource_type", "image"
                     ));
-            return (String) uploadResult.get("secure_url");
+            return uploadResult.get("secure_url").toString();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IOException(e);
         }
     }
 }

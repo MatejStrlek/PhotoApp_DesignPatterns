@@ -2,10 +2,7 @@ package hr.algebra.photoapp_designpatterns_galic.controller;
 
 import hr.algebra.photoapp_designpatterns_galic.model.AuditLog;
 import hr.algebra.photoapp_designpatterns_galic.model.User;
-import hr.algebra.photoapp_designpatterns_galic.service.AuditLoggerService;
-import hr.algebra.photoapp_designpatterns_galic.service.PackageService;
-import hr.algebra.photoapp_designpatterns_galic.service.PhotoShowService;
-import hr.algebra.photoapp_designpatterns_galic.service.UserService;
+import hr.algebra.photoapp_designpatterns_galic.service.*;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -23,12 +20,16 @@ public class AdminController {
     private final PackageService packageService;
     private final PhotoShowService photoShowService;
     private final AuditLoggerService auditLoggerService;
+    private final ConsumptionService consumptionService;
 
-    public AdminController(UserService userService, PackageService packageService, PhotoShowService photoShowService, AuditLoggerService auditLoggerService) {
+    private static final String REDIRECT_ADMIN_USERS = "redirect:/admin/users";
+
+    public AdminController(UserService userService, PackageService packageService, PhotoShowService photoShowService, AuditLoggerService auditLoggerService, ConsumptionService consumptionService) {
         this.userService = userService;
         this.packageService = packageService;
         this.photoShowService = photoShowService;
         this.auditLoggerService = auditLoggerService;
+        this.consumptionService = consumptionService;
     }
 
     @GetMapping("/users")
@@ -53,7 +54,7 @@ public class AdminController {
             RedirectAttributes redirectAttributes) {
         userService.updateUser(id, role, packageType);
         redirectAttributes.addFlashAttribute("uploadSuccess", "User updated successfully!");
-        return "redirect:/admin/users";
+        return REDIRECT_ADMIN_USERS;
     }
 
     @GetMapping("/users/delete/{id}")
@@ -61,10 +62,10 @@ public class AdminController {
         try {
             userService.deleteUser(id);
             redirectAttributes.addFlashAttribute("uploadSuccess", "User deleted successfully!");
-            return "redirect:/admin/users";
+            return REDIRECT_ADMIN_USERS;
         } catch (DataIntegrityViolationException ex) {
             redirectAttributes.addFlashAttribute("uploadError", "Cannot delete user with linked data.");
-            return "redirect:/admin/users";
+            return REDIRECT_ADMIN_USERS;
         }
     }
 
