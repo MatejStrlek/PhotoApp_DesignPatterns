@@ -65,7 +65,7 @@ public class PhotoShowService {
                 currentUser,
                 ActionType.EDIT,
                 "Updated photo metadata for photo ID: " + id + ", Description: "
-                        + description + ", Hashtags: " + hashtags
+                        + description + ", Hashtag/s: " + hashtags
         );
     }
 
