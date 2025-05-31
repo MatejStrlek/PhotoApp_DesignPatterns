@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 public class ConsumptionService {
@@ -60,10 +61,10 @@ public class ConsumptionService {
     }
 
     public double getTotalUploadSizeByUserId(Long userId) {
-        return consumptionRepository.getTotalUploadSizeByUserId(userId);
+        return Optional.ofNullable(consumptionRepository.getTotalUploadSizeByUserId(userId)).orElse(0.0);
     }
 
     public int getTotalDailyUploadsByUserId(Long userId) {
-        return consumptionRepository.getTotalDailyUploadsByUserId(userId);
+        return Optional.ofNullable(consumptionRepository.getTotalDailyUploadsByUserId(userId)).orElse(0);
     }
 }
