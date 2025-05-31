@@ -86,7 +86,7 @@ public class AdminController {
         }
     }
 
-    @GetMapping("users/{id}/logs")
+    @GetMapping("/users/{id}/logs")
     public String viewUserLogs(@PathVariable Long id, Model model) {
         User user = userService.findById(id).orElseThrow();
         List<AuditLog> userLogs = auditLoggerService.getUserLogs(id);
