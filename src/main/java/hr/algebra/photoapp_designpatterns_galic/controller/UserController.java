@@ -67,11 +67,9 @@ public class UserController {
     public String showProfile(Model model) {
         User user = userService.getCurrentUser();
         LocalDate today = LocalDate.now();
-
         Consumption consumption = consumptionRepository
                 .findByUserAndDate(user, today)
                 .orElse(null);
-
         PackageLimitStrategy limits = packageLimitStrategyFactory.getPackageLimitStrategy(user.getPackageType());
 
         packageChangeRequestRepository

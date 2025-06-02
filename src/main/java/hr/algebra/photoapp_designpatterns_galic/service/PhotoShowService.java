@@ -60,11 +60,14 @@ public class PhotoShowService {
         photo.setHashtags(new ArrayList<>(hashtags));
 
         photoRepository.save(photo);
+        logUpdatePhotoMetadataAction(photo, currentUser, description, hashtags);
+    }
 
+    private void logUpdatePhotoMetadataAction(Photo photo, User currentUser, String description, List<String> hashtags) {
         auditLoggerService.logAction(
                 currentUser,
                 ActionType.EDIT,
-                "Updated photo metadata for photo ID: " + id + ", Description: "
+                "Updated photo metadata for photo ID: " + photo.getId() + ", Description: "
                         + description + ", Hashtag/s: " + hashtags
         );
     }
@@ -85,12 +88,7 @@ public class PhotoShowService {
        if (startDate != null) { filtersQuery.append("Start Date: ").append(startDate).append(", "); }
        if (endDate != null) { filtersQuery.append("End Date: ").append(endDate).append(", "); }
 
-        auditLoggerService.logAction(
-                userService.getCurrentUser(),
-                ActionType.SEARCH,
-                filtersQuery.toString()
-        );
-
+       logFilterSearchAction(filtersQuery);
         return photoRepository.searchPhotos(
                 author,
                 hashtag,
@@ -98,6 +96,14 @@ public class PhotoShowService {
                 maxSize,
                 startDate,
                 endDate
+        );
+    }
+
+    private void logFilterSearchAction(StringBuilder filtersQuery) {
+        auditLoggerService.logAction(
+                userService.getCurrentUser(),
+                ActionType.SEARCH,
+                filtersQuery.toString()
         );
     }
 

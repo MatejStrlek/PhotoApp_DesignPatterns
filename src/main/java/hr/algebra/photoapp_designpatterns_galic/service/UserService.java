@@ -2,6 +2,7 @@ package hr.algebra.photoapp_designpatterns_galic.service;
 
 import hr.algebra.photoapp_designpatterns_galic.model.*;
 import hr.algebra.photoapp_designpatterns_galic.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -35,9 +37,9 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(password);
         User user = new User(email, encodedPassword, Role.REGISTERED, packageType);
         user.setAuthProvider(authProvider);
-        userRepository.save(user);
 
-        auditLoggerService.logAction(
+        userRepository.save(user);
+        logAction(
                 user,
                 ActionType.REGISTER,
                 "Local user registered with email: " + email
@@ -74,9 +76,9 @@ public class UserService {
     public void setCurrentUserPackage(PackageType packageType) {
         User currentUser = getCurrentUser();
         currentUser.setPackageType(packageType);
-        userRepository.save(currentUser);
 
-        auditLoggerService.logAction(
+        userRepository.save(currentUser);
+        logAction(
                 currentUser,
                 ActionType.SELECT_PACKAGE,
                 "User selected package: " + packageType
@@ -87,9 +89,9 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
         user.setRole(Role.valueOf(role));
         user.setPackageType(PackageType.valueOf(packageType));
-        userRepository.save(user);
 
-        auditLoggerService.logAction(
+        userRepository.save(user);
+        logAction(
                 getCurrentUser(),
                 ActionType.EDIT,
                 "User updated with role: " + role + " and package: " + packageType
@@ -106,10 +108,14 @@ public class UserService {
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
-        auditLoggerService.logAction(
+        logAction(
                 getCurrentUser(),
                 ActionType.DELETE,
                 "User deleted with ID: " + id
         );
+    }
+
+    private void logAction(User user, ActionType actionType, String message) {
+        auditLoggerService.logAction(user, actionType, message);
     }
 }

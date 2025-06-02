@@ -78,7 +78,10 @@ public class PhotoUploadService implements PhotoUploadComponent {
                 dto, processedImage, user);
 
         photoRepository.save(photo);
+        logUploadAction(photo, user);
+    }
 
+    private void logUploadAction(Photo photo, User user) {
         auditLoggerService.logAction(
                 user,
                 ActionType.UPLOAD,

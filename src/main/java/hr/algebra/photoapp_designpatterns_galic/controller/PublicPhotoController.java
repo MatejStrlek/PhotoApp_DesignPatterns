@@ -1,6 +1,7 @@
 package hr.algebra.photoapp_designpatterns_galic.controller;
 
 import hr.algebra.photoapp_designpatterns_galic.model.ActionType;
+import hr.algebra.photoapp_designpatterns_galic.model.User;
 import hr.algebra.photoapp_designpatterns_galic.service.AuditLoggerService;
 import hr.algebra.photoapp_designpatterns_galic.service.UserService;
 import org.springframework.core.io.Resource;
@@ -49,8 +50,7 @@ public class PublicPhotoController {
     public String viewPhoto(@PathVariable Long id, Model model) {
         Photo photo = photoShowService.findPhotoById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Photo not found"));
-
-        auditLoggerService.logAction(
+        logAction(
                 userService.getCurrentUser(),
                 ActionType.VIEW,
                 "Viewed photo with ID: " + id
@@ -69,7 +69,7 @@ public class PublicPhotoController {
 
     @GetMapping("/public/photos/download/original/{id}")
     public ResponseEntity<Resource> downloadOriginalPhoto(@PathVariable Long id) throws IOException {
-        auditLoggerService.logAction(
+        logAction(
                 userService.getCurrentUser(),
                 ActionType.DOWNLOAD,
                 "Downloaded original photo with ID: " + id
@@ -79,7 +79,7 @@ public class PublicPhotoController {
 
     @GetMapping("/public/photos/download/processed/{id}")
     public ResponseEntity<Resource> downloadProcessedPhoto(@PathVariable Long id) throws IOException {
-        auditLoggerService.logAction(
+        logAction(
                 userService.getCurrentUser(),
                 ActionType.DOWNLOAD,
                 "Downloaded processed photo with ID: " + id
@@ -119,5 +119,9 @@ public class PublicPhotoController {
                     .contentLength(resource.contentLength())
                     .body(resource);
         }
+    }
+
+    private void logAction(User user, ActionType actionType, String message) {
+        auditLoggerService.logAction(user, actionType, message);
     }
 }

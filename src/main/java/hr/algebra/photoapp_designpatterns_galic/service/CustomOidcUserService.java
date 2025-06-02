@@ -45,16 +45,16 @@ public class CustomOidcUserService extends OidcUserService {
             return userRepository.save(newUser);
         });
 
-        auditLoggerService.logAction(
-                user,
-                ActionType.LOGIN,
-                "User logged in with provider: " + registrationId
-        );
+        logLoginAction(user, registrationId);
 
         return new DefaultOidcUser(
                 List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())),
                 oidcUser.getIdToken(),
                 oidcUser.getUserInfo()
         );
+    }
+
+    private void logLoginAction(User user, String registrationId) {
+        auditLoggerService.logAction(user, ActionType.LOGIN, "User logged in via " + registrationId);
     }
 }

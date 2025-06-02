@@ -30,7 +30,6 @@ public class PackageService {
         LocalDate today = LocalDate.now();
 
         Optional<PackageChangeRequest> existingRequest = requestRepository.findByUser(user);
-
         if (existingRequest.isPresent() && existingRequest.get().hasRequestedToday(today)) {
             throw new IllegalStateException("You can only request one package change per day.");
         }
@@ -41,7 +40,10 @@ public class PackageService {
         changeRequest.setRequestDate(today);
 
         requestRepository.save(changeRequest);
+        logChangeRequest(user, newType, today);
+    }
 
+    private void logChangeRequest(User user, PackageType newType, LocalDate today) {
         auditLoggerService.logAction(
                 user,
                 ActionType.CHANGE_PACKAGE,

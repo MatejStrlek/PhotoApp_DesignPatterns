@@ -46,16 +46,16 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             return userRepository.save(newUser);
         });
 
-        auditLoggerService.logAction(
-                user,
-                ActionType.LOGIN,
-                "User logged in with provider: " + registrationId
-        );
+        logLoginAction(user, registrationId);
 
         return new DefaultOAuth2User(
                 List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())),
                 oauth2User.getAttributes(),
                 "email"
         );
+    }
+
+    private void logLoginAction(User user, String registrationId) {
+        auditLoggerService.logAction(user, ActionType.LOGIN, "User logged in via " + registrationId);
     }
 }
