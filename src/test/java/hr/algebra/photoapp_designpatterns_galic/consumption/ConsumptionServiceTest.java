@@ -4,6 +4,7 @@ import hr.algebra.photoapp_designpatterns_galic.model.Consumption;
 import hr.algebra.photoapp_designpatterns_galic.model.PackageType;
 import hr.algebra.photoapp_designpatterns_galic.model.User;
 import hr.algebra.photoapp_designpatterns_galic.repository.ConsumptionRepository;
+import hr.algebra.photoapp_designpatterns_galic.service.AuditLoggerService;
 import hr.algebra.photoapp_designpatterns_galic.service.ConsumptionService;
 import hr.algebra.photoapp_designpatterns_galic.service.UserService;
 import hr.algebra.photoapp_designpatterns_galic.strategy.package_limit.PackageLimitStrategy;
@@ -35,6 +36,9 @@ class ConsumptionServiceTest {
 
     @Mock
     private PackageLimitStrategy packageLimitStrategy;
+
+    @Mock
+    private AuditLoggerService auditLoggerService;
 
     @InjectMocks
     private ConsumptionService consumptionService;
@@ -84,7 +88,7 @@ class ConsumptionServiceTest {
 
     @Test
     void shouldThrowExceptionIfDailyUploadLimitExceeded() {
-        Consumption existing = new Consumption(testUser, LocalDate.now(), 4.0, 5); // already reached count limit
+        Consumption existing = new Consumption(testUser, LocalDate.now(), 4.0, 5);
 
         when(packageLimitStrategy.getMaxUploadSizeMb()).thenReturn(5.0);
         when(packageLimitStrategy.getDailyUploadLimit()).thenReturn(5);
