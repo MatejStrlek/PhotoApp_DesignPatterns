@@ -132,3 +132,25 @@ spring.profiles.active=cloudinary   # For Cloudinary cloud storage
 Start the Spring Boot application `PhotoAppDesignPatternsGalicApplication`.
 
 Open your browser and go to: [http://localhost:8081](http://localhost:8081)
+
+## 🐳 Docker Support
+
+This project is fully Dockerized using Podman (a Docker-compatible container engine). To build and run the application in Podman/Docker, follow these steps:
+
+Make sure your Spring Boot app is packaged:
+
+```bash
+mvn clean package
+```
+
+Then build the Podman image:
+
+```bash
+podman build -t photoapp-designpatterns .
+```
+
+Run the Podman container:
+
+```bash
+podman run -p 8081:8081 photoapp-designpatterns
+```
