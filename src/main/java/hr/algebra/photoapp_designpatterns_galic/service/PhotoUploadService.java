@@ -8,6 +8,7 @@ import hr.algebra.photoapp_designpatterns_galic.model.User;
 import hr.algebra.photoapp_designpatterns_galic.repository.PhotoRepository;
 import hr.algebra.photoapp_designpatterns_galic.decorator.PhotoUploadComponent;
 import hr.algebra.photoapp_designpatterns_galic.repository.UserRepository;
+import hr.algebra.photoapp_designpatterns_galic.service.metrics.UploadMetricsService;
 import hr.algebra.photoapp_designpatterns_galic.strategy.image_processing.FormatConversionStrategy;
 import hr.algebra.photoapp_designpatterns_galic.strategy.image_processing.ImageProcessingContext;
 import hr.algebra.photoapp_designpatterns_galic.strategy.image_processing.ResizeStrategy;
@@ -30,19 +31,21 @@ public class PhotoUploadService implements PhotoUploadComponent {
     private final ConsumptionService consumptionService;
     private final ImageStorageStrategy imageStorageStrategy;
     private final AuditLoggerService auditLoggerService;
+    private final UploadMetricsService uploadMetricsService;
 
     public PhotoUploadService(
             PhotoRepository photoRepository,
             UserRepository userRepository,
             ConsumptionService consumptionService,
             ImageStorageStrategy imageStorageStrategy,
-            AuditLoggerService auditLoggerService
+            AuditLoggerService auditLoggerService, UploadMetricsService uploadMetricsService
     ) {
         this.photoRepository = photoRepository;
         this.userRepository = userRepository;
         this.consumptionService = consumptionService;
         this.imageStorageStrategy = imageStorageStrategy;
         this.auditLoggerService = auditLoggerService;
+        this.uploadMetricsService = uploadMetricsService;
     }
 
     @Override
@@ -79,6 +82,7 @@ public class PhotoUploadService implements PhotoUploadComponent {
 
         photoRepository.save(photo);
         logUploadAction(photo, user);
+        uploadMetricsService.incrementUploadCount();
     }
 
     private void logUploadAction(Photo photo, User user) {
