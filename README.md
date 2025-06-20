@@ -281,3 +281,39 @@ disk I/O and memory retention
 - Avoiding eager loading - repositories are optimized to fetch only necessary data, reducing object loading
 - Selective DTO usage - large objects like Photo are only partially mapped into DTOs for rendering, avoiding
 unnecessary object construction and JSON conversion
+
+## Metrics and Monitoring of the Application
+This project integrates Spring Boot Actuator and Micrometer to provide real-time monitoring and 
+observability of application health and performance.
+
+### Health monitoring
+The application exposes a `/actuator/health` endpoint that provides insights into the health of various components:
+- Component availability (DB, disk, etc.)
+- Startup health details
+- Configurable readiness probes
+
+```bash
+curl http://localhost:8081/actuator/health
+```
+
+### Metrics monitoring
+The following metrics are automatically collected and exposed:
+
+| Metric name            | Description                        |
+|------------------------|------------------------------------|
+| `http.server.requests` | Counts and times all HTTP requests |
+| `jvm.memory.used`      | Tracks used memory per JVM region  |
+| `process.uptime`       | Application uptime in seconds      |
+| `logback.events`       | Counts logging events by level     |
+| `system.cpu.usage`     | Real-time system CPU usage         |
+
+### Custom metric - `photo.uploads.total`
+This custom metric tracks the total number of photos uploaded by users. 
+It is incremented each time a photo is successfully uploaded.
+
+View the metric via the `/actuator/metrics/photo.uploads.total` endpoint:
+```bash
+curl http://localhost:8081/actuator/metrics/photo.uploads.total
+```
+
+
