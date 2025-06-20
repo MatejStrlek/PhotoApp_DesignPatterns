@@ -1,5 +1,6 @@
 package hr.algebra.photoapp_designpatterns_galic.service;
 
+import hr.algebra.photoapp_designpatterns_galic.aop.TrackPerformance;
 import hr.algebra.photoapp_designpatterns_galic.model.ActionType;
 import hr.algebra.photoapp_designpatterns_galic.model.PackageChangeRequest;
 import hr.algebra.photoapp_designpatterns_galic.model.PackageType;
@@ -25,6 +26,7 @@ public class PackageService {
         this.auditLoggerService = auditLoggerService;
     }
 
+    @TrackPerformance
     public void requestPackageChange(PackageType newType) {
         User user = userService.getCurrentUser();
         LocalDate today = LocalDate.now();
