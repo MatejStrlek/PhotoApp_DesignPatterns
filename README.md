@@ -259,3 +259,25 @@ We designed our testing approach around best practices. It ensures:
 - Refactoring can be done safely
 
 This approach helps us maintain high quality as the project evolves.
+
+### Testing the Application
+The application uses a layered testing approach to ensure correctness and stability. Unit tests validate 
+individual services and strategies using JUnit and Mockito. Integration tests verify the collaboration between 
+controllers, services and repositories using `@SpringBootTest` and `MockMvc`. UI (web layer) tests are handled 
+using `@WebMvcTest`. This multi-level approach ensures that business logic, security rules, 
+and form validation work as expected.
+
+### Compatibility with Forms
+Forms such as photo upload and package selection are tested to ensure compatibility with HTML input 
+and validation. Tests simulate form submissions using MockMvc with `.param(...)` and `.multipart(...)` for file 
+uploads. Spring's binding mechanism is validated through model attribute checks 
+(`attributeExists("photoUploadDTO")`), and CSRF protection is integrated in POST tests using `.with(csrf())`.
+
+### Performance and Memory Improvements
+- Streaming image uploads: Instead of storing uploaded files fully in memory, images are processed using 
+buffered streams and `ImageIO`, which reduces memory pressure
+- Cloud storage integration - images are offloaded to Cloudinary, reducing local 
+disk I/O and memory retention
+- Avoiding eager loading - repositories are optimized to fetch only necessary data, reducing object loading
+- Selective DTO usage - large objects like Photo are only partially mapped into DTOs for rendering, avoiding
+unnecessary object construction and JSON conversion
