@@ -1,11 +1,11 @@
-package hr.algebra.photoapp_designpatterns_galic.strategy;
+package hr.algebra.photoapp_designpatterns_galic.unit_tests;
 
 import hr.algebra.photoapp_designpatterns_galic.strategy.package_limit.ProPackageStrategy;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class ProPackageStrategyTest {
+class ProPackageStrategyUnitTest {
     private final ProPackageStrategy proPackageStrategy = new ProPackageStrategy();
 
     @Test

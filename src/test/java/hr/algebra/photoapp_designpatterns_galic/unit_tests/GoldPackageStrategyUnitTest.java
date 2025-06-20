@@ -1,11 +1,11 @@
-package hr.algebra.photoapp_designpatterns_galic.strategy;
+package hr.algebra.photoapp_designpatterns_galic.unit_tests;
 
 import hr.algebra.photoapp_designpatterns_galic.strategy.package_limit.GoldPackageStrategy;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class GoldPackageStrategyTest {
+class GoldPackageStrategyUnitTest {
     private final GoldPackageStrategy goldPackageStrategy = new GoldPackageStrategy();
 
     @Test

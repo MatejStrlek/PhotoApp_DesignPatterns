@@ -154,3 +154,108 @@ Run the Podman container:
 ```bash
 podman run -p 8081:8081 photoapp-designpatterns
 ```
+
+You can now access the application at [http://localhost:8081](http://localhost:8081).
+
+# Testing Concepts
+
+### Introduction
+Software testing is the process of evaluating an application to ensure it meets the expected 
+requirements and performs reliably under various conditions.
+
+### Purpose of Testing
+Testing serves to:
+- Detect **bugs and errors** early in the development cycle
+- Validate that the system conforms to both **specification** and **user needs**
+- Improve **software quality** by ensuring functional and performance correctness
+- Enable safer **refactoring** and reduce long-term development costs
+
+### Testing Levels
+We follow a layered testing strategy, applying multiple testing levels:
+
+| Level               | Purpose                                                                 |
+|--------------------|-------------------------------------------------------------------------|
+| **Unit Testing**     | Tests individual components (e.g. methods) in isolation using mocks     |
+| **Integration Testing** | Verifies interactions between components (e.g., Controller + Service) |
+| **System Testing**     | Ensures the application works as a whole                              |
+| **Acceptance Testing** | Confirms that the system meets the customer’s requirements             |
+
+These levels help uncover issues at different stages of development.
+
+### Unit Testing
+Unit testing focuses on verifying individual modules in isolation. It follows a **white-box** approach, 
+meaning the developer tests internal logic directly. Characteristics:
+- Written and maintained by developers
+- No interaction with databases or external systems
+- Encourages smaller, tighter, decoupled code
+- Supports continuous integration practices
+
+Frameworks and tools used:
+- JUnit – for test structure and assertions
+- Mockito – for mocking dependencies like repositories
+
+Example: `ConsumptionServiceTest` ensures that `getMaxUploadSizeMb()` correctly calculates the maximum 
+upload size based on the user's package.
+
+### Integration Testing
+Once individual units are tested, **integration testing** checks whether they work correctly together. It:
+- Validates component interactions (e.g., controller + service + repository)
+- Helps uncover issues like misconfigured beans, serialization problems and business logic integration bugs
+
+We use:
+- `@SpringBootTest` to load the full application context
+- Embedded H2 database for realistic data flow
+
+### UI / Controller Testing
+We test the controller layer using:
+- **MockMvc** with `@WebMvcTest`
+
+We verify:
+- Correct view names
+- HTTP response status
+- Form submission handling
+
+This simulates browser requests to ensure the frontend and backend interact correctly.
+
+### Testing Methodologies
+#### 🔳 Black-box Testing
+- No knowledge of code internals
+- Based on expected input/output behavior
+- Applied in UI testing and acceptance testing
+
+#### ⚪ White-box Testing
+- Based on internal logic and structure
+- Used in unit testing (e.g., branch coverage, conditions)
+
+### Verification vs Validation
+- **Verification**: "Are we building the product right?" (meets the spec)
+- **Validation**: "Are we building the right product?" (meets user need)
+
+We apply both principles: verifying implementation matches the spec and validating user workflows through UI testing.
+
+### Mocking
+
+Mocking is the process of simulating external dependencies or behaviors:
+- Allows isolated testing (e.g., no real DB)
+- Enables inspection of method calls and arguments
+
+We use Mockito to:
+- Replace `UserRepository`, `PhotoRepository`, etc., with fake implementations
+- Focus tests purely on logic, not external effects
+
+### Test Case Design
+Each test case follows this structure:
+- What is being tested (requirement)
+- Test data used
+- Steps to execute the test
+- Expected result
+- Pass/fail condition
+
+### Summary
+We designed our testing approach around best practices. It ensures:
+- Code is reliable and robust
+- Components are loosely coupled and testable
+- Features behave correctly across all layers
+- Refactoring can be done safely
+
+This approach helps us maintain high quality as the project evolves.
