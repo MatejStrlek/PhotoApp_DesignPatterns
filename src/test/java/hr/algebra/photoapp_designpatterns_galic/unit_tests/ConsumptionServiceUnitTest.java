@@ -1,4 +1,4 @@
-package hr.algebra.photoapp_designpatterns_galic.consumption;
+package hr.algebra.photoapp_designpatterns_galic.unit_tests;
 
 import hr.algebra.photoapp_designpatterns_galic.model.Consumption;
 import hr.algebra.photoapp_designpatterns_galic.model.PackageType;
@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class ConsumptionServiceTest {
+class ConsumptionServiceUnitTest {
     @Mock
     private ConsumptionRepository consumptionRepository;
 

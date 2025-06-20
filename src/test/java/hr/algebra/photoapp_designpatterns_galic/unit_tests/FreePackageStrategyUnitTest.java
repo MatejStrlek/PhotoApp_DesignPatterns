@@ -1,11 +1,11 @@
-package hr.algebra.photoapp_designpatterns_galic.strategy;
+package hr.algebra.photoapp_designpatterns_galic.unit_tests;
 
 import hr.algebra.photoapp_designpatterns_galic.strategy.package_limit.FreePackageStrategy;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class FreePackageStrategyTest {
+class FreePackageStrategyUnitTest {
     private final FreePackageStrategy freePackageStrategy = new FreePackageStrategy();
 
     @Test
