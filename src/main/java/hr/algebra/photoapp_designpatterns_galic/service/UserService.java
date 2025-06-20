@@ -1,5 +1,6 @@
 package hr.algebra.photoapp_designpatterns_galic.service;
 
+import hr.algebra.photoapp_designpatterns_galic.aop.TrackPerformance;
 import hr.algebra.photoapp_designpatterns_galic.model.*;
 import hr.algebra.photoapp_designpatterns_galic.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,7 @@ public class UserService {
         return user.getPackageType() == null;
     }
 
+    @TrackPerformance
     public User getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = extractEmailFromAuthentication(auth);

@@ -1,5 +1,6 @@
 package hr.algebra.photoapp_designpatterns_galic.controller;
 
+import hr.algebra.photoapp_designpatterns_galic.aop.TrackPerformance;
 import hr.algebra.photoapp_designpatterns_galic.model.ActionType;
 import hr.algebra.photoapp_designpatterns_galic.model.User;
 import hr.algebra.photoapp_designpatterns_galic.service.AuditLoggerService;
@@ -61,6 +62,7 @@ public class PublicPhotoController {
     }
 
     @GetMapping("/public/photos/search")
+    @TrackPerformance
     public String searchPhotos(@ModelAttribute("searchDTO") PhotoSearchDTO filter, Model model) {
         List<Photo> filteredPhotos = photoShowService.searchPhotos(filter);
         model.addAttribute("photos", filteredPhotos);

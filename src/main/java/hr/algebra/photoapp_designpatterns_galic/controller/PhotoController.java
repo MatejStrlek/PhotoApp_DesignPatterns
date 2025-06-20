@@ -1,5 +1,6 @@
 package hr.algebra.photoapp_designpatterns_galic.controller;
 
+import hr.algebra.photoapp_designpatterns_galic.aop.TrackPerformance;
 import hr.algebra.photoapp_designpatterns_galic.decorator.PhotoUploadComponent;
 import hr.algebra.photoapp_designpatterns_galic.dto.PhotoUploadDTO;
 import hr.algebra.photoapp_designpatterns_galic.model.Photo;
@@ -57,6 +58,7 @@ public class PhotoController {
     }
 
     @PostMapping("/photos/upload")
+    @TrackPerformance
     public String handleUpload(@Valid @ModelAttribute PhotoUploadDTO photoUploadDTO,
                                BindingResult bindingResult,
                                  Model model,
@@ -80,6 +82,7 @@ public class PhotoController {
     }
 
     @PostMapping("/photos/update")
+    @TrackPerformance
     public String handleUpdate(@RequestParam Long id,
                                @RequestParam String description,
                                @RequestParam String hashtags,
