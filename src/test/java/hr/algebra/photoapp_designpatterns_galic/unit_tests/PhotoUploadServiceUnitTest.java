@@ -10,6 +10,7 @@ import hr.algebra.photoapp_designpatterns_galic.repository.UserRepository;
 import hr.algebra.photoapp_designpatterns_galic.service.AuditLoggerService;
 import hr.algebra.photoapp_designpatterns_galic.service.ConsumptionService;
 import hr.algebra.photoapp_designpatterns_galic.service.PhotoUploadService;
+import hr.algebra.photoapp_designpatterns_galic.service.metrics.UploadMetricsService;
 import hr.algebra.photoapp_designpatterns_galic.strategy.image_storage.ImageStorageStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,8 @@ class PhotoUploadServiceUnitTest {
     private ImageStorageStrategy imageStorageStrategy;
     @Mock
     private AuditLoggerService auditLoggerService;
+    @Mock
+    private UploadMetricsService uploadMetricsService;
     @InjectMocks
     private PhotoUploadService photoUploadService;
     private User testUser;
