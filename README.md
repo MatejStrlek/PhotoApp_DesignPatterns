@@ -316,4 +316,26 @@ View the metric via the `/actuator/metrics/photo.uploads.total` endpoint:
 curl http://localhost:8081/actuator/metrics/photo.uploads.total
 ```
 
+## SOLID principles
+I wrote my code to comply with all five SOLID principles, improving maintainability, flexibility and testability:
+
+### Single responsibility principle
+- `PhotoUploadService`, `UploadMetricsService`, `AuditLoggerService` and etc. each have clear, distinct responsibilities
+
+### Open-closed principle
+- The strategy pattern (`ImageStorageStrategy`, `PackageLimitStrategyFactory`) allows adding new behaviors without
+modifying existing logic
+
+### Liskov substitution principle
+- All `PackageLimitStrategy` implementations can be used interchangeably via the factory without altering behavior
+
+### Interface segregation principle
+- Interface Segregation Principle (ISP) - interfaces like `ImageStorageStrategy` are small and focused
+- Clients implement just what they need
+
+### Dependency inversion principle
+- Services depend on strategy interfaces and abstract repositories, not concrete classes
+
+> These refactorings support safer evolution of the codebase and enable easier unit testing and duplication detection.
+
 
