@@ -338,4 +338,27 @@ modifying existing logic
 
 > These refactorings support safer evolution of the codebase and enable easier unit testing and duplication detection.
 
+## Functional programming
 
+This project applies functional programming techniques in several methods to reduce coupling, improve readability
+and eliminate boilerplate code.
+
+### Example 1 - using optional to eliminate null checks
+
+```java
+return userRepository.findByEmail(email)
+    .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+```
+
+This replaces manual null checks with a fluent, exception-safe one-liner.
+
+### Example 2 - cleaning hashtag input with streams
+
+```java
+List<String> hashtags = dto.getHashtags().stream()
+.map(String::trim)
+.filter(hashtag -> !hashtag.isEmpty())
+.collect(Collectors.toList());
+```
+
+This stream operation trims each hashtag, filters out empty strings and collects the result into a list.
