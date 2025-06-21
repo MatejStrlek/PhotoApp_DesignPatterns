@@ -22,7 +22,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class PhotoUploadService implements PhotoUploadComponent {
@@ -137,6 +139,11 @@ public class PhotoUploadService implements PhotoUploadComponent {
                                       User author) {
         Photo photo = new Photo();
 
+        List<String> hashtags = dto.getHashtags().stream()
+                .map(String::trim)
+                .filter(hashtag -> !hashtag.isEmpty())
+                .collect(Collectors.toList());
+
         photo.setOriginalFilePath(originalPath);
         photo.setOriginalFileName(originalPath.substring(originalPath.lastIndexOf('/') + 1));
         photo.setOriginalFileSizeMb(calculateSizeInMB(originalSizeBytes));
@@ -149,7 +156,7 @@ public class PhotoUploadService implements PhotoUploadComponent {
         photo.setWidth(image.getWidth());
         photo.setHeight(image.getHeight());
         photo.setDescription(dto.getDescription());
-        photo.setHashtags(dto.getHashtags());
+        photo.setHashtags(hashtags);
         photo.setUploadTime(LocalDateTime.now());
         photo.setAuthor(author);
 
