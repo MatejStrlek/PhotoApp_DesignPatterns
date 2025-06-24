@@ -362,3 +362,31 @@ List<String> hashtags = dto.getHashtags().stream()
 ```
 
 This stream operation trims each hashtag, filters out empty strings and collects the result into a list.
+
+### Example 3 - functional style in scheduled task (Command pattern)
+
+```java
+public void processPackageChangeRequests() {
+    requestRepository
+        .findAll()
+        .forEach(request -> {
+            new ChangeUserPackageCommand(
+                request.getUser(),
+                request.getRequestedPackageType(),
+                userRepository
+            ).execute();
+            requestRepository.delete(request);
+        });
+}
+```
+
+This example uses a functional approach to iterate over package change requests, 
+encapsulating the logic in a command object.
+
+### Example 4 - smart defaulting with `orElseGet` for consumption tracking
+
+```java
+Consumption consumption = consumptionRepository
+    .findByUserAndDate(user, today)
+    .orElseGet(() -> new Consumption(user, today, 0, 0));
+```
