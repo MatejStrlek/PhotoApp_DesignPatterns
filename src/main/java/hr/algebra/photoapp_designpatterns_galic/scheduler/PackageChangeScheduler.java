@@ -1,7 +1,6 @@
 package hr.algebra.photoapp_designpatterns_galic.scheduler;
 
 import hr.algebra.photoapp_designpatterns_galic.command.ChangeUserPackageCommand;
-import hr.algebra.photoapp_designpatterns_galic.command.ICommand;
 import hr.algebra.photoapp_designpatterns_galic.repository.PackageChangeRequestRepository;
 import hr.algebra.photoapp_designpatterns_galic.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,17 +23,15 @@ public class PackageChangeScheduler {
     // Runs every day at midnight
     //@Scheduled(cron = "0 0 0 * * *")
     public void processPackageChangeRequests() {
-        var requests = requestRepository.findAll();
-
-        for (var request : requests) {
-            ICommand cmd = new ChangeUserPackageCommand(
-                    request.getUser(),
-                    request.getRequestedPackageType(),
-                    userRepository
-            );
-
-            cmd.execute();
-            requestRepository.delete(request);
-        }
+         requestRepository
+                .findAll()
+                .forEach(request -> {
+                    new ChangeUserPackageCommand(
+                            request.getUser(),
+                            request.getRequestedPackageType(),
+                            userRepository
+                    ).execute();
+                    requestRepository.delete(request);
+                });
     }
 }
