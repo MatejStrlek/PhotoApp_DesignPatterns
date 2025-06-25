@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -34,7 +36,14 @@ public class AdminController {
 
     @GetMapping("/users")
     public String viewAllUsers(Model model) {
-        model.addAttribute("users", userService.findAllUsers());
+        List<User> users = userService.findAllUsers();
+        Set<Long> heavyUserIds = userService.getHeavyUsers()
+                .stream()
+                .map(User::getId)
+                .collect(Collectors.toSet());
+
+        model.addAttribute("users", users);
+        model.addAttribute("heavyUserIds", heavyUserIds);
         return "admin/users";
     }
 

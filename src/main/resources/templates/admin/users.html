@@ -32,7 +32,10 @@
             <td th:text="${user.id}">1</td>
             <td th:text="${user.email}">user@example.com</td>
             <td th:text="${user.role}">REGISTERED</td>
-            <td th:text="${user.packageType}">FREE</td>
+            <td>
+                <span th:text="${user.packageType}">FREE</span>
+                <span th:if="${heavyUserIds.contains(user.id)}" class="badge bg-warning text-dark ms-2">75%+ used</span>
+            </td>
             <td th:text="${user.authProvider}">LOCAL</td>
             <td>
                 <a th:href="@{/admin/users/edit/{id}(id=${user.id})}" class="btn btn-sm btn-outline-primary">Edit</a>

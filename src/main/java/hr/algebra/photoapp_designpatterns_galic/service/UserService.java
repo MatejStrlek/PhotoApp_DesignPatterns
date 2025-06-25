@@ -2,7 +2,10 @@ package hr.algebra.photoapp_designpatterns_galic.service;
 
 import hr.algebra.photoapp_designpatterns_galic.aop.TrackPerformance;
 import hr.algebra.photoapp_designpatterns_galic.model.*;
+import hr.algebra.photoapp_designpatterns_galic.repository.ConsumptionRepository;
 import hr.algebra.photoapp_designpatterns_galic.repository.UserRepository;
+import hr.algebra.photoapp_designpatterns_galic.strategy.package_limit.PackageLimitStrategy;
+import hr.algebra.photoapp_designpatterns_galic.strategy.package_limit.PackageLimitStrategyFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -13,6 +16,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,12 +26,17 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuditLoggerService auditLoggerService;
+    private final ConsumptionRepository consumptionRepository;
+    private final PackageLimitStrategyFactory packageLimitStrategyFactory;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuditLoggerService auditLoggerService) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                       AuditLoggerService auditLoggerService, ConsumptionRepository consumptionRepository, PackageLimitStrategyFactory packageLimitStrategyFactory) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.auditLoggerService = auditLoggerService;
+        this.consumptionRepository = consumptionRepository;
+        this.packageLimitStrategyFactory = packageLimitStrategyFactory;
     }
 
     public void registerLocalUser(String email, String password, PackageType packageType, AuthProvider authProvider) {
@@ -119,5 +128,19 @@ public class UserService {
 
     private void logAction(User user, ActionType actionType, String message) {
         auditLoggerService.logAction(user, actionType, message);
+    }
+
+    public List<User> getHeavyUsers() {
+        return userRepository.findAll()
+                .stream()
+                .filter(user -> {
+                    PackageLimitStrategy userStrategy = packageLimitStrategyFactory.getPackageLimitStrategy(user.getPackageType());
+                    return consumptionRepository.findByUserAndDate(user, LocalDate.now())
+                            .map(consumption ->
+                                    consumption.getDailyUploadCount() >= userStrategy.getDailyUploadLimit() * .75
+                            )
+                            .orElse(false);
+                })
+                .toList();
     }
 }
