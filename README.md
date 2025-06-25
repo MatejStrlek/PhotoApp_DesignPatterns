@@ -390,3 +390,26 @@ Consumption consumption = consumptionRepository
     .findByUserAndDate(user, today)
     .orElseGet(() -> new Consumption(user, today, 0, 0));
 ```
+
+This avoids null checks by providing a default (newly created) `Consumption` object if none exists for the user today.
+
+### Example 5 - Stream based filtering and mapping to detect heavy users
+
+```java
+public List<User> getHeavyUsers() {
+        return userRepository.findAll()
+                .stream()
+                .filter(user -> {
+                    PackageLimitStrategy userStrategy = packageLimitStrategyFactory.getPackageLimitStrategy(user.getPackageType());
+                    return consumptionRepository.findByUserAndDate(user, LocalDate.now())
+                            .map(consumption ->
+                                    consumption.getDailyUploadCount() >= userStrategy.getDailyUploadLimit() * .75
+                            )
+                            .orElse(false);
+                })
+                .toList();
+    }
+```
+
+This method uses streams to filter users based on their upload consumption and flags those who are approaching their 
+daily limit. It combines functional programming with the repository pattern to keep the code clean and expressive.
